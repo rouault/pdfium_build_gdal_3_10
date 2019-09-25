@@ -29,4 +29,8 @@ Run build_win.bat from cmd.exe with the environment variables set for the compil
 you use (VS 2017 or 2019) (or from the "x64 Native tools Command Prompt for VS2017" entry)
 
 It will generate the install/ directory with the end products: header files
-and libpdfium.lib needed to build the GDAL PDF driver.
+and pdfium.lib needed to build the GDAL PDF driver.
+
+# Pre-build binaries
+
+Pre-build binaries may be found at https://github.com/rouault/pdfium_build_gdal_3_1/releases
