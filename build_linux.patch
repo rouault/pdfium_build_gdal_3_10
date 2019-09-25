@@ -1,0 +1,19 @@
+diff --git a/config/BUILDCONFIG.gn b/config/BUILDCONFIG.gn
+index f89e7e8..4bb5f07 100644
+--- a/config/BUILDCONFIG.gn
++++ b/config/BUILDCONFIG.gn
+@@ -451,10 +451,10 @@ if (is_win) {
+ }
+ 
+ if (is_posix) {
+-  if (current_os != "aix") {
+-    default_compiler_configs +=
+-        [ "//build/config/gcc:symbol_visibility_hidden" ]
+-  }
++  #if (current_os != "aix") {
++  #  default_compiler_configs +=
++  #      [ "//build/config/gcc:symbol_visibility_hidden" ]
++  #}
+ }
+ 
+ if (is_fuchsia) {

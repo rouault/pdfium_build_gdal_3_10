@@ -1,0 +1,15 @@
+diff --git a/config/win/BUILD.gn b/config/win/BUILD.gn
+index edb193a5f..dd7e468cf 100644
+--- a/config/win/BUILD.gn
++++ b/config/win/BUILD.gn
+@@ -459,7 +459,9 @@ config("default_crt") {
+       configs = [ ":dynamic_crt" ]
+     } else {
+       # Desktop Windows: static CRT.
+-      configs = [ ":static_crt" ]
++      #configs = [ ":static_crt" ]
++      # Actually for GDAL context, use dynamic CRT
++      configs = [ ":dynamic_crt" ]
+     }
+   }
+ }
