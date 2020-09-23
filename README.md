@@ -22,8 +22,11 @@ and libpdfium.a needed to build the GDAL PDF driver
 Tested with Windows 10, with Visual Studio 2017 community edition, x86_64 build.
 The "Debugging Tools for Windows SDK 10" must also be installed.
 
-Download https://storage.googleapis.com/chrome-infra/depot_tools.zip, and extract it
-in a depot_tools subdirectory of this repository.
+Run "git clone https://chromium.googlesource.com/chromium/tools/depot_tools.git"
+from this repository, which will create a depot_tools subdirectory.
+
+Then run "git checkout 8b95534d333ce22acd9e30d972d09d323950483c" in that
+subdirectory.
 
 Run build_win.bat from cmd.exe with the environment variables set for the compiler
 you use (VS 2017 or 2019) (or from the "x64 Native tools Command Prompt for VS2017" entry)
