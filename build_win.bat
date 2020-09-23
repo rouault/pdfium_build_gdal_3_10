@@ -4,7 +4,7 @@ set PATH=%CD%\depot_tools;%PATH%
 set DEPOT_TOOLS_WIN_TOOLCHAIN=0
 set DEPOT_TOOLS_URL=https://chromium.googlesource.com/chromium/tools/depot_tools.git
 set PDFIUM_URL=https://pdfium.googlesource.com/pdfium.git
-set REV=chromium/3922
+set REV=chromium/4272
 set INSTALL_DIR=%CD%\install
 
 REM Checkout
@@ -31,7 +31,7 @@ mkdir %INSTALL_DIR%
 mkdir %INSTALL_DIR%\include\pdfium
 mkdir %INSTALL_DIR%\include\pdfium\public
 xcopy /Y /R public %INSTALL_DIR%\include\pdfium\public
-FOR %%X IN (build fpdfsdk core\fxge core\fxge\agg core\fxge\dib core\fpdfdoc core\fpdfapi\parser core\fpdfapi\page core\fpdfapi\render core\fxcrt third_party\agg23 third_party\base third_party\base\allocator\partition_allocator third_party\base\numerics) DO (
+FOR %%X IN (build constants fpdfsdk core\fxge core\fxge\agg core\fxge\dib core\fpdfdoc core\fpdfapi\parser core\fpdfapi\page core\fpdfapi\render core\fxcrt third_party\agg23 third_party\base third_party\base\allocator\partition_allocator third_party\base\numerics) DO (
   mkdir %INSTALL_DIR%\include\pdfium\%%X
   copy %%X\*.h %INSTALL_DIR%\include\pdfium\%%X
 )

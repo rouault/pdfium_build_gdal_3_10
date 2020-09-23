@@ -1,39 +1,38 @@
 diff --git a/core/fpdfapi/page/cpdf_occontext.cpp b/core/fpdfapi/page/cpdf_occontext.cpp
-index 96f8a88..869cde5 100644
+index a5751b0..9f9231d 100644
 --- a/core/fpdfapi/page/cpdf_occontext.cpp
 +++ b/core/fpdfapi/page/cpdf_occontext.cpp
-@@ -181,7 +181,7 @@ bool CPDF_OCContext::GetOCGVisible(const CPDF_Dictionary* pOCGDict) const {
+@@ -181,7 +181,8 @@ bool CPDF_OCContext::GetOCGVisible(const CPDF_Dictionary* pOCGDict) const {
    return bState;
  }
  
 -bool CPDF_OCContext::CheckObjectVisible(const CPDF_PageObject* pObj) const {
-+bool CPDF_OCContextInterface::CheckObjectVisible(const CPDF_PageObject* pObj) const {
++bool CPDF_OCContextInterface::CheckObjectVisible(
++    const CPDF_PageObject* pObj) const {
    for (size_t i = 0; i < pObj->m_ContentMarks.CountItems(); ++i) {
      const CPDF_ContentMarkItem* item = pObj->m_ContentMarks.GetItem(i);
      if (item->GetName() == "OC" &&
 diff --git a/core/fpdfapi/page/cpdf_occontext.h b/core/fpdfapi/page/cpdf_occontext.h
-index 0a68639..4b08ae5 100644
+index 6506181..622f252 100644
 --- a/core/fpdfapi/page/cpdf_occontext.h
 +++ b/core/fpdfapi/page/cpdf_occontext.h
-@@ -17,15 +17,22 @@ class CPDF_Dictionary;
+@@ -17,14 +17,20 @@ class CPDF_Dictionary;
  class CPDF_Document;
  class CPDF_PageObject;
  
 -class CPDF_OCContext final : public Retainable {
-+class CPDF_OCContextInterface: public Retainable
-+{
-+    public:
-+        virtual ~CPDF_OCContextInterface() = default;
-+        virtual bool CheckOCGVisible(const CPDF_Dictionary* pOCGDict) const = 0;
-+        virtual bool CheckObjectVisible(const CPDF_PageObject* pObj) const;
++class CPDF_OCContextInterface : public Retainable {
++ public:
++  virtual ~CPDF_OCContextInterface() = default;
++  virtual bool CheckOCGVisible(const CPDF_Dictionary* pOCGDict) const = 0;
++  virtual bool CheckObjectVisible(const CPDF_PageObject* pObj) const;
 +};
 +
 +class CPDF_OCContext : public CPDF_OCContextInterface {
   public:
    enum UsageType { View = 0, Design, Print, Export };
  
-   template <typename T, typename... Args>
-   friend RetainPtr<T> pdfium::MakeRetain(Args&&... args);
+   CONSTRUCT_VIA_MAKE_RETAIN;
  
 -  bool CheckOCGVisible(const CPDF_Dictionary* pOCGDict) const;
 -  bool CheckObjectVisible(const CPDF_PageObject* pObj) const;
@@ -42,10 +41,10 @@ index 0a68639..4b08ae5 100644
   private:
    CPDF_OCContext(CPDF_Document* pDoc, UsageType eUsageType);
 diff --git a/core/fpdfapi/render/cpdf_renderoptions.h b/core/fpdfapi/render/cpdf_renderoptions.h
-index 889c425..bd2c92b 100644
+index 12f3958..64222d0 100644
 --- a/core/fpdfapi/render/cpdf_renderoptions.h
 +++ b/core/fpdfapi/render/cpdf_renderoptions.h
-@@ -74,16 +74,16 @@ class CPDF_RenderOptions {
+@@ -66,17 +66,19 @@ class CPDF_RenderOptions {
    void SetDrawAnnots(bool draw) { m_bDrawAnnots = draw; }
    bool GetDrawAnnots() const { return m_bDrawAnnots; }
  
@@ -54,22 +53,25 @@ index 889c425..bd2c92b 100644
      m_pOCContext = context;
    }
 -  const CPDF_OCContext* GetOCContext() const { return m_pOCContext.Get(); }
-+  const CPDF_OCContextInterface* GetOCContext() const { return m_pOCContext.Get(); }
++  const CPDF_OCContextInterface* GetOCContext() const {
++    return m_pOCContext.Get();
++  }
  
   private:
    Type m_ColorMode = kNormal;
    bool m_bDrawAnnots = false;
    Options m_Options;
+   ColorScheme m_ColorScheme;
 -  RetainPtr<CPDF_OCContext> m_pOCContext;
 +  RetainPtr<CPDF_OCContextInterface> m_pOCContext;
  };
  
  #endif  // CORE_FPDFAPI_RENDER_CPDF_RENDEROPTIONS_H_
 diff --git a/core/fpdfdoc/cpdf_annotlist.cpp b/core/fpdfdoc/cpdf_annotlist.cpp
-index b1ceb57..8cfdb79 100644
+index 64ecffb..cc846d0 100644
 --- a/core/fpdfdoc/cpdf_annotlist.cpp
 +++ b/core/fpdfdoc/cpdf_annotlist.cpp
-@@ -246,7 +246,7 @@ void CPDF_AnnotList::DisplayPass(CPDF_Page* pPage,
+@@ -245,7 +245,7 @@ void CPDF_AnnotList::DisplayPass(CPDF_Page* pPage,
  
      if (pOptions) {
        const CPDF_Dictionary* pAnnotDict = pAnnot->GetAnnotDict();
@@ -79,10 +81,10 @@ index b1ceb57..8cfdb79 100644
            !pOCContext->CheckOCGVisible(
                pAnnotDict->GetDictFor(pdfium::annotation::kOC))) {
 diff --git a/third_party/BUILD.gn b/third_party/BUILD.gn
-index 0017f1f..d1b28d1 100644
+index 8e1532c..47c7f8b 100644
 --- a/third_party/BUILD.gn
 +++ b/third_party/BUILD.gn
-@@ -423,6 +423,12 @@ source_set("fx_libopenjpeg") {
+@@ -387,6 +387,12 @@ source_set("fx_libopenjpeg") {
      # Must be after no_chromium_code for warning flags to be ordered correctly.
      ":fx_libopenjpeg_warnings",
    ]
@@ -96,14 +98,13 @@ index 0017f1f..d1b28d1 100644
      "libopenjpeg20/bio.c",
      "libopenjpeg20/cio.c",
 diff --git a/third_party/libopenjpeg20/opj_config.h b/third_party/libopenjpeg20/opj_config.h
-index fda1f64..65633ba 100644
+index fda1f64..c6b6e0d 100644
 --- a/third_party/libopenjpeg20/opj_config.h
 +++ b/third_party/libopenjpeg20/opj_config.h
-@@ -14,3 +14,191 @@
+@@ -14,3 +14,190 @@
  #define OPJ_VERSION_MAJOR 2
  #define OPJ_VERSION_MINOR 3
  #define OPJ_VERSION_BUILD 1
-+
 +
 +#define opj_alloc_tile_component_data pdfium_opj_alloc_tile_component_data
 +#define opj_bio_create pdfium_opj_bio_create
