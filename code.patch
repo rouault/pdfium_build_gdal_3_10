@@ -1,22 +1,21 @@
 diff --git a/core/fpdfapi/page/cpdf_occontext.cpp b/core/fpdfapi/page/cpdf_occontext.cpp
-index a5751b0..9f9231d 100644
+index 56592cbfe..4ddf3df1e 100644
 --- a/core/fpdfapi/page/cpdf_occontext.cpp
 +++ b/core/fpdfapi/page/cpdf_occontext.cpp
-@@ -181,7 +181,8 @@ bool CPDF_OCContext::GetOCGVisible(const CPDF_Dictionary* pOCGDict) const {
+@@ -182,7 +182,7 @@ bool CPDF_OCContext::GetOCGVisible(const CPDF_Dictionary* pOCGDict) const {
    return bState;
  }
  
 -bool CPDF_OCContext::CheckObjectVisible(const CPDF_PageObject* pObj) const {
-+bool CPDF_OCContextInterface::CheckObjectVisible(
-+    const CPDF_PageObject* pObj) const {
-   for (size_t i = 0; i < pObj->m_ContentMarks.CountItems(); ++i) {
-     const CPDF_ContentMarkItem* item = pObj->m_ContentMarks.GetItem(i);
-     if (item->GetName() == "OC" &&
++bool CPDF_OCContextInterface::CheckObjectVisible(const CPDF_PageObject* pObj) const {
+   const CPDF_ContentMarks* pMarks = pObj->GetContentMarks();
+   for (size_t i = 0; i < pMarks->CountItems(); ++i) {
+     const CPDF_ContentMarkItem* item = pMarks->GetItem(i);
 diff --git a/core/fpdfapi/page/cpdf_occontext.h b/core/fpdfapi/page/cpdf_occontext.h
-index 6506181..622f252 100644
+index 6083d31ca..07979deaf 100644
 --- a/core/fpdfapi/page/cpdf_occontext.h
 +++ b/core/fpdfapi/page/cpdf_occontext.h
-@@ -17,14 +17,20 @@ class CPDF_Dictionary;
+@@ -18,14 +18,20 @@ class CPDF_Dictionary;
  class CPDF_Document;
  class CPDF_PageObject;
  
@@ -41,7 +40,7 @@ index 6506181..622f252 100644
   private:
    CPDF_OCContext(CPDF_Document* pDoc, UsageType eUsageType);
 diff --git a/core/fpdfapi/render/cpdf_renderoptions.h b/core/fpdfapi/render/cpdf_renderoptions.h
-index 12f3958..64222d0 100644
+index 2a383a53d..62bffa082 100644
 --- a/core/fpdfapi/render/cpdf_renderoptions.h
 +++ b/core/fpdfapi/render/cpdf_renderoptions.h
 @@ -66,17 +66,19 @@ class CPDF_RenderOptions {
@@ -68,10 +67,10 @@ index 12f3958..64222d0 100644
  
  #endif  // CORE_FPDFAPI_RENDER_CPDF_RENDEROPTIONS_H_
 diff --git a/core/fpdfdoc/cpdf_annotlist.cpp b/core/fpdfdoc/cpdf_annotlist.cpp
-index 64ecffb..cc846d0 100644
+index e8b4c09d9..9ec31aec1 100644
 --- a/core/fpdfdoc/cpdf_annotlist.cpp
 +++ b/core/fpdfdoc/cpdf_annotlist.cpp
-@@ -245,7 +245,7 @@ void CPDF_AnnotList::DisplayPass(CPDF_Page* pPage,
+@@ -246,7 +246,7 @@ void CPDF_AnnotList::DisplayPass(CPDF_Page* pPage,
  
      if (pOptions) {
        const CPDF_Dictionary* pAnnotDict = pAnnot->GetAnnotDict();
@@ -81,10 +80,10 @@ index 64ecffb..cc846d0 100644
            !pOCContext->CheckOCGVisible(
                pAnnotDict->GetDictFor(pdfium::annotation::kOC))) {
 diff --git a/third_party/BUILD.gn b/third_party/BUILD.gn
-index 8e1532c..47c7f8b 100644
+index f2c599941..6dab9a313 100644
 --- a/third_party/BUILD.gn
 +++ b/third_party/BUILD.gn
-@@ -387,6 +387,12 @@ source_set("fx_libopenjpeg") {
+@@ -388,6 +388,12 @@ source_set("fx_libopenjpeg") {
      # Must be after no_chromium_code for warning flags to be ordered correctly.
      ":fx_libopenjpeg_warnings",
    ]
@@ -97,408 +96,3 @@ index 8e1532c..47c7f8b 100644
    sources = [
      "libopenjpeg20/bio.c",
      "libopenjpeg20/cio.c",
-diff --git a/third_party/libopenjpeg20/opj_config.h b/third_party/libopenjpeg20/opj_config.h
-index fda1f64..1d9ba49 100644
---- a/third_party/libopenjpeg20/opj_config.h
-+++ b/third_party/libopenjpeg20/opj_config.h
-@@ -14,3 +14,387 @@
- #define OPJ_VERSION_MAJOR 2
- #define OPJ_VERSION_MINOR 3
- #define OPJ_VERSION_BUILD 1
-+
-+#define opj_alloc_tile_component_data pdfium_opj_alloc_tile_component_data
-+#define opj_bio_create pdfium_opj_bio_create
-+#define opj_bio_destroy pdfium_opj_bio_destroy
-+#define opj_bio_flush pdfium_opj_bio_flush
-+#define opj_bio_inalign pdfium_opj_bio_inalign
-+#define opj_bio_init_dec pdfium_opj_bio_init_dec
-+#define opj_bio_init_enc pdfium_opj_bio_init_enc
-+#define opj_bio_numbytes pdfium_opj_bio_numbytes
-+#define opj_bio_read pdfium_opj_bio_read
-+#define opj_bio_write pdfium_opj_bio_write
-+#define opj_calculate_norms pdfium_opj_calculate_norms
-+#define opj_cond_create pdfium_opj_cond_create
-+#define opj_cond_destroy pdfium_opj_cond_destroy
-+#define opj_cond_signal pdfium_opj_cond_signal
-+#define opj_cond_wait pdfium_opj_cond_wait
-+#define opj_copy_image_header pdfium_opj_copy_image_header
-+#define opj_dwt_calc_explicit_stepsizes pdfium_opj_dwt_calc_explicit_stepsizes
-+#define opj_dwt_decode pdfium_opj_dwt_decode
-+#define opj_dwt_decode_real pdfium_opj_dwt_decode_real
-+#define opj_dwt_encode pdfium_opj_dwt_encode
-+#define opj_dwt_encode_real pdfium_opj_dwt_encode_real
-+#define opj_dwt_getgain pdfium_opj_dwt_getgain
-+#define opj_dwt_getgain_real pdfium_opj_dwt_getgain_real
-+#define opj_dwt_getnorm pdfium_opj_dwt_getnorm
-+#define opj_dwt_getnorm_real pdfium_opj_dwt_getnorm_real
-+#define opj_event_msg pdfium_opj_event_msg
-+#define opj_image_comp_header_update pdfium_opj_image_comp_header_update
-+#define opj_image_create0 pdfium_opj_image_create0
-+#define opj_j2k_convert_progression_order pdfium_opj_j2k_convert_progression_order
-+#define opj_j2k_create_compress pdfium_opj_j2k_create_compress
-+#define opj_j2k_create_decompress pdfium_opj_j2k_create_decompress
-+#define opj_j2k_decode pdfium_opj_j2k_decode
-+#define opj_j2k_decode_tile pdfium_opj_j2k_decode_tile
-+#define opj_j2k_destroy pdfium_opj_j2k_destroy
-+#define opj_j2k_encode pdfium_opj_j2k_encode
-+#define opj_j2k_end_compress pdfium_opj_j2k_end_compress
-+#define opj_j2k_end_decompress pdfium_opj_j2k_end_decompress
-+#define opj_j2k_get_tile pdfium_opj_j2k_get_tile
-+#define opj_j2k_read_header pdfium_opj_j2k_read_header
-+#define opj_j2k_read_tile_header pdfium_opj_j2k_read_tile_header
-+#define opj_j2k_set_decode_area pdfium_opj_j2k_set_decode_area
-+#define opj_j2k_set_decoded_components pdfium_opj_j2k_set_decoded_components
-+#define opj_j2k_set_decoded_resolution_factor pdfium_opj_j2k_set_decoded_resolution_factor
-+#define opj_j2k_set_threads pdfium_opj_j2k_set_threads
-+#define opj_j2k_setup_decoder pdfium_opj_j2k_setup_decoder
-+#define opj_j2k_setup_encoder pdfium_opj_j2k_setup_encoder
-+#define opj_j2k_setup_mct_encoding pdfium_opj_j2k_setup_mct_encoding
-+#define opj_j2k_start_compress pdfium_opj_j2k_start_compress
-+#define opj_j2k_write_tile pdfium_opj_j2k_write_tile
-+#define opj_jp2_create pdfium_opj_jp2_create
-+#define opj_jp2_decode pdfium_opj_jp2_decode
-+#define opj_jp2_decode_tile pdfium_opj_jp2_decode_tile
-+#define opj_jp2_destroy pdfium_opj_jp2_destroy
-+#define opj_jp2_encode pdfium_opj_jp2_encode
-+#define opj_jp2_end_compress pdfium_opj_jp2_end_compress
-+#define opj_jp2_end_decompress pdfium_opj_jp2_end_decompress
-+#define opj_jp2_get_tile pdfium_opj_jp2_get_tile
-+#define opj_jp2_read_header pdfium_opj_jp2_read_header
-+#define opj_jp2_read_tile_header pdfium_opj_jp2_read_tile_header
-+#define opj_jp2_set_decode_area pdfium_opj_jp2_set_decode_area
-+#define opj_jp2_set_decoded_components pdfium_opj_jp2_set_decoded_components
-+#define opj_jp2_set_decoded_resolution_factor pdfium_opj_jp2_set_decoded_resolution_factor
-+#define opj_jp2_set_threads pdfium_opj_jp2_set_threads
-+#define opj_jp2_setup_decoder pdfium_opj_jp2_setup_decoder
-+#define opj_jp2_setup_encoder pdfium_opj_jp2_setup_encoder
-+#define opj_jp2_start_compress pdfium_opj_jp2_start_compress
-+#define opj_jp2_write_tile pdfium_opj_jp2_write_tile
-+#define opj_matrix_inversion_f pdfium_opj_matrix_inversion_f
-+#define opj_mct_decode pdfium_opj_mct_decode
-+#define opj_mct_decode_custom pdfium_opj_mct_decode_custom
-+#define opj_mct_decode_real pdfium_opj_mct_decode_real
-+#define opj_mct_encode pdfium_opj_mct_encode
-+#define opj_mct_encode_custom pdfium_opj_mct_encode_custom
-+#define opj_mct_encode_real pdfium_opj_mct_encode_real
-+#define opj_mct_get_mct_norms pdfium_opj_mct_get_mct_norms
-+#define opj_mct_get_mct_norms_real pdfium_opj_mct_get_mct_norms_real
-+#define opj_mct_getnorm pdfium_opj_mct_getnorm
-+#define opj_mct_getnorm_real pdfium_opj_mct_getnorm_real
-+#define opj_mqc_bypass_enc pdfium_opj_mqc_bypass_enc
-+#define opj_mqc_bypass_flush_enc pdfium_opj_mqc_bypass_flush_enc
-+#define opj_mqc_bypass_get_extra_bytes pdfium_opj_mqc_bypass_get_extra_bytes
-+#define opj_mqc_bypass_init_enc pdfium_opj_mqc_bypass_init_enc
-+#define opj_mqc_encode pdfium_opj_mqc_encode
-+#define opj_mqc_erterm_enc pdfium_opj_mqc_erterm_enc
-+#define opj_mqc_flush pdfium_opj_mqc_flush
-+#define opj_mqc_init_dec pdfium_opj_mqc_init_dec
-+#define opj_mqc_init_enc pdfium_opj_mqc_init_enc
-+#define opj_mqc_numbytes pdfium_opj_mqc_numbytes
-+#define opj_mqc_raw_init_dec pdfium_opj_mqc_raw_init_dec
-+#define opj_mqc_reset_enc pdfium_opj_mqc_reset_enc
-+#define opj_mqc_resetstates pdfium_opj_mqc_resetstates
-+#define opj_mqc_restart_init_enc pdfium_opj_mqc_restart_init_enc
-+#define opj_mqc_segmark_enc pdfium_opj_mqc_segmark_enc
-+#define opj_mqc_setstate pdfium_opj_mqc_setstate
-+#define opj_mutex_create pdfium_opj_mutex_create
-+#define opj_mutex_destroy pdfium_opj_mutex_destroy
-+#define opj_mutex_lock pdfium_opj_mutex_lock
-+#define opj_mutex_unlock pdfium_opj_mutex_unlock
-+#define opj_pi_create_decode pdfium_opj_pi_create_decode
-+#define opj_pi_create_encode pdfium_opj_pi_create_encode
-+#define opj_pi_destroy pdfium_opj_pi_destroy
-+#define opj_pi_initialise_encode pdfium_opj_pi_initialise_encode
-+#define opj_pi_next pdfium_opj_pi_next
-+#define opj_pi_update_encoding_parameters pdfium_opj_pi_update_encoding_parameters
-+#define opj_procedure_list_add_procedure pdfium_opj_procedure_list_add_procedure
-+#define opj_procedure_list_clear pdfium_opj_procedure_list_clear
-+#define opj_procedure_list_create pdfium_opj_procedure_list_create
-+#define opj_procedure_list_destroy pdfium_opj_procedure_list_destroy
-+#define opj_procedure_list_get_first_procedure pdfium_opj_procedure_list_get_first_procedure
-+#define opj_procedure_list_get_nb_procedures pdfium_opj_procedure_list_get_nb_procedures
-+#define opj_read_bytes_BE pdfium_opj_read_bytes_BE
-+#define opj_read_bytes_LE pdfium_opj_read_bytes_LE
-+#define opj_read_double_BE pdfium_opj_read_double_BE
-+#define opj_read_double_LE pdfium_opj_read_double_LE
-+#define opj_read_float_BE pdfium_opj_read_float_BE
-+#define opj_read_float_LE pdfium_opj_read_float_LE
-+#define opj_set_default_event_handler pdfium_opj_set_default_event_handler
-+#define opj_sparse_array_int32_create pdfium_opj_sparse_array_int32_create
-+#define opj_sparse_array_int32_free pdfium_opj_sparse_array_int32_free
-+#define opj_sparse_array_int32_read pdfium_opj_sparse_array_int32_read
-+#define opj_sparse_array_int32_write pdfium_opj_sparse_array_int32_write
-+#define opj_sparse_array_is_region_valid pdfium_opj_sparse_array_is_region_valid
-+#define opj_stream_default_read pdfium_opj_stream_default_read
-+#define opj_stream_default_seek pdfium_opj_stream_default_seek
-+#define opj_stream_default_skip pdfium_opj_stream_default_skip
-+#define opj_stream_default_write pdfium_opj_stream_default_write
-+#define opj_stream_flush pdfium_opj_stream_flush
-+#define opj_stream_get_number_byte_left pdfium_opj_stream_get_number_byte_left
-+#define opj_stream_has_seek pdfium_opj_stream_has_seek
-+#define opj_stream_read_data pdfium_opj_stream_read_data
-+#define opj_stream_read_seek pdfium_opj_stream_read_seek
-+#define opj_stream_read_skip pdfium_opj_stream_read_skip
-+#define opj_stream_seek pdfium_opj_stream_seek
-+#define opj_stream_skip pdfium_opj_stream_skip
-+#define opj_stream_tell pdfium_opj_stream_tell
-+#define opj_stream_write_data pdfium_opj_stream_write_data
-+#define opj_stream_write_seek pdfium_opj_stream_write_seek
-+#define opj_stream_write_skip pdfium_opj_stream_write_skip
-+#define opj_t1_create pdfium_opj_t1_create
-+#define opj_t1_decode_cblks pdfium_opj_t1_decode_cblks
-+#define opj_t1_destroy pdfium_opj_t1_destroy
-+#define opj_t1_encode_cblks pdfium_opj_t1_encode_cblks
-+#define opj_t2_create pdfium_opj_t2_create
-+#define opj_t2_decode_packets pdfium_opj_t2_decode_packets
-+#define opj_t2_destroy pdfium_opj_t2_destroy
-+#define opj_t2_encode_packets pdfium_opj_t2_encode_packets
-+#define opj_tcd_copy_tile_data pdfium_opj_tcd_copy_tile_data
-+#define opj_tcd_create pdfium_opj_tcd_create
-+#define opj_tcd_decode_tile pdfium_opj_tcd_decode_tile
-+#define opj_tcd_destroy pdfium_opj_tcd_destroy
-+#define opj_tcd_encode_tile pdfium_opj_tcd_encode_tile
-+#define opj_tcd_get_decoded_tile_size pdfium_opj_tcd_get_decoded_tile_size
-+#define opj_tcd_get_encoded_tile_size pdfium_opj_tcd_get_encoded_tile_size
-+#define opj_tcd_init pdfium_opj_tcd_init
-+#define opj_tcd_init_decode_tile pdfium_opj_tcd_init_decode_tile
-+#define opj_tcd_init_encode_tile pdfium_opj_tcd_init_encode_tile
-+#define opj_tcd_is_band_empty pdfium_opj_tcd_is_band_empty
-+#define opj_tcd_is_subband_area_of_interest pdfium_opj_tcd_is_subband_area_of_interest
-+#define opj_tcd_makelayer pdfium_opj_tcd_makelayer
-+#define opj_tcd_makelayer_fixed pdfium_opj_tcd_makelayer_fixed
-+#define opj_tcd_rateallocate pdfium_opj_tcd_rateallocate
-+#define opj_tcd_rateallocate_fixed pdfium_opj_tcd_rateallocate_fixed
-+#define opj_tcd_reinit_segment pdfium_opj_tcd_reinit_segment
-+#define opj_tcd_update_tile_data pdfium_opj_tcd_update_tile_data
-+#define opj_tgt_create pdfium_opj_tgt_create
-+#define opj_tgt_decode pdfium_opj_tgt_decode
-+#define opj_tgt_destroy pdfium_opj_tgt_destroy
-+#define opj_tgt_encode pdfium_opj_tgt_encode
-+#define opj_tgt_init pdfium_opj_tgt_init
-+#define opj_tgt_reset pdfium_opj_tgt_reset
-+#define opj_tgt_setvalue pdfium_opj_tgt_setvalue
-+#define opj_thread_create pdfium_opj_thread_create
-+#define opj_thread_join pdfium_opj_thread_join
-+#define opj_thread_pool_create pdfium_opj_thread_pool_create
-+#define opj_thread_pool_destroy pdfium_opj_thread_pool_destroy
-+#define opj_thread_pool_get_thread_count pdfium_opj_thread_pool_get_thread_count
-+#define opj_thread_pool_submit_job pdfium_opj_thread_pool_submit_job
-+#define opj_thread_pool_wait_completion pdfium_opj_thread_pool_wait_completion
-+#define opj_tls_get pdfium_opj_tls_get
-+#define opj_tls_set pdfium_opj_tls_set
-+#define opj_write_bytes_BE pdfium_opj_write_bytes_BE
-+#define opj_write_bytes_LE pdfium_opj_write_bytes_LE
-+#define opj_write_double_BE pdfium_opj_write_double_BE
-+#define opj_write_double_LE pdfium_opj_write_double_LE
-+#define opj_write_float_BE pdfium_opj_write_float_BE
-+#define opj_write_float_LE pdfium_opj_write_float_LE
-+#define opj_default_callback pdfium_opj_default_callback
-+#define opj_read_from_file pdfium_opj_read_from_file
-+#define opj_seek_from_file pdfium_opj_seek_from_file
-+#define opj_skip_from_file pdfium_opj_skip_from_file
-+#define opj_write_from_file pdfium_opj_write_from_file
-+#define opj_j2k_add_tlmarker pdfium_opj_j2k_add_tlmarker
-+#define opj_j2k_allocate_tile_element_cstr_index pdfium_opj_j2k_allocate_tile_element_cstr_index
-+#define opj_j2k_build_decoder pdfium_opj_j2k_build_decoder
-+#define opj_j2k_build_encoder pdfium_opj_j2k_build_encoder
-+#define opj_j2k_copy_default_tcp_and_create_tcd pdfium_opj_j2k_copy_default_tcp_and_create_tcd
-+#define opj_j2k_create_tcd pdfium_opj_j2k_create_tcd
-+#define opj_j2k_decode_one_tile pdfium_opj_j2k_decode_one_tile
-+#define opj_j2k_decode_tiles pdfium_opj_j2k_decode_tiles
-+#define opj_j2k_decoding_validation pdfium_opj_j2k_decoding_validation
-+#define opj_j2k_destroy_header_memory pdfium_opj_j2k_destroy_header_memory
-+#define opj_j2k_dump_tile_info pdfium_opj_j2k_dump_tile_info
-+#define opj_j2k_encoding_validation pdfium_opj_j2k_encoding_validation
-+#define opj_j2k_end_encoding pdfium_opj_j2k_end_encoding
-+#define opj_j2k_get_default_stride pdfium_opj_j2k_get_default_stride
-+#define opj_j2k_get_end_header pdfium_opj_j2k_get_end_header
-+#define opj_j2k_get_num_tp pdfium_opj_j2k_get_num_tp
-+#define opj_j2k_get_tp_stride pdfium_opj_j2k_get_tp_stride
-+#define opj_j2k_init_info pdfium_opj_j2k_init_info
-+#define opj_j2k_mct_validation pdfium_opj_j2k_mct_validation
-+#define opj_j2k_move_data_from_codec_to_output_image pdfium_opj_j2k_move_data_from_codec_to_output_image
-+#define opj_j2k_post_write_tile pdfium_opj_j2k_post_write_tile
-+#define opj_j2k_read_SPCod_SPCoc pdfium_opj_j2k_read_SPCod_SPCoc
-+#define opj_j2k_read_SQcd_SQcc pdfium_opj_j2k_read_SQcd_SQcc
-+#define opj_j2k_read_cbd pdfium_opj_j2k_read_cbd
-+#define opj_j2k_read_coc pdfium_opj_j2k_read_coc
-+#define opj_j2k_read_cod pdfium_opj_j2k_read_cod
-+#define opj_j2k_read_com pdfium_opj_j2k_read_com
-+#define opj_j2k_read_crg pdfium_opj_j2k_read_crg
-+#define opj_j2k_read_float32_to_float pdfium_opj_j2k_read_float32_to_float
-+#define opj_j2k_read_float32_to_int32 pdfium_opj_j2k_read_float32_to_int32
-+#define opj_j2k_read_float64_to_float pdfium_opj_j2k_read_float64_to_float
-+#define opj_j2k_read_float64_to_int32 pdfium_opj_j2k_read_float64_to_int32
-+#define opj_j2k_read_header_procedure pdfium_opj_j2k_read_header_procedure
-+#define opj_j2k_read_int16_to_float pdfium_opj_j2k_read_int16_to_float
-+#define opj_j2k_read_int16_to_int32 pdfium_opj_j2k_read_int16_to_int32
-+#define opj_j2k_read_int32_to_float pdfium_opj_j2k_read_int32_to_float
-+#define opj_j2k_read_int32_to_int32 pdfium_opj_j2k_read_int32_to_int32
-+#define opj_j2k_read_mcc pdfium_opj_j2k_read_mcc
-+#define opj_j2k_read_mco pdfium_opj_j2k_read_mco
-+#define opj_j2k_read_mct pdfium_opj_j2k_read_mct
-+#define opj_j2k_read_plm pdfium_opj_j2k_read_plm
-+#define opj_j2k_read_plt pdfium_opj_j2k_read_plt
-+#define opj_j2k_read_poc pdfium_opj_j2k_read_poc
-+#define opj_j2k_read_ppm pdfium_opj_j2k_read_ppm
-+#define opj_j2k_read_ppt pdfium_opj_j2k_read_ppt
-+#define opj_j2k_read_qcc pdfium_opj_j2k_read_qcc
-+#define opj_j2k_read_qcd pdfium_opj_j2k_read_qcd
-+#define opj_j2k_read_rgn pdfium_opj_j2k_read_rgn
-+#define opj_j2k_read_siz pdfium_opj_j2k_read_siz
-+#define opj_j2k_read_sot pdfium_opj_j2k_read_sot
-+#define opj_j2k_read_tlm pdfium_opj_j2k_read_tlm
-+#define opj_j2k_tcp_destroy pdfium_opj_j2k_tcp_destroy
-+#define opj_j2k_update_image_data pdfium_opj_j2k_update_image_data
-+#define opj_j2k_update_image_dimensions pdfium_opj_j2k_update_image_dimensions
-+#define opj_j2k_update_rates pdfium_opj_j2k_update_rates
-+#define opj_j2k_write_SPCod_SPCoc pdfium_opj_j2k_write_SPCod_SPCoc
-+#define opj_j2k_write_SQcd_SQcc pdfium_opj_j2k_write_SQcd_SQcc
-+#define opj_j2k_write_all_coc pdfium_opj_j2k_write_all_coc
-+#define opj_j2k_write_all_qcc pdfium_opj_j2k_write_all_qcc
-+#define opj_j2k_write_cod pdfium_opj_j2k_write_cod
-+#define opj_j2k_write_com pdfium_opj_j2k_write_com
-+#define opj_j2k_write_eoc pdfium_opj_j2k_write_eoc
-+#define opj_j2k_write_epc pdfium_opj_j2k_write_epc
-+#define opj_j2k_write_float_to_float pdfium_opj_j2k_write_float_to_float
-+#define opj_j2k_write_float_to_float64 pdfium_opj_j2k_write_float_to_float64
-+#define opj_j2k_write_float_to_int16 pdfium_opj_j2k_write_float_to_int16
-+#define opj_j2k_write_float_to_int32 pdfium_opj_j2k_write_float_to_int32
-+#define opj_j2k_write_mct_data_group pdfium_opj_j2k_write_mct_data_group
-+#define opj_j2k_write_poc pdfium_opj_j2k_write_poc
-+#define opj_j2k_write_poc_in_memory pdfium_opj_j2k_write_poc_in_memory
-+#define opj_j2k_write_qcd pdfium_opj_j2k_write_qcd
-+#define opj_j2k_write_regions pdfium_opj_j2k_write_regions
-+#define opj_j2k_write_siz pdfium_opj_j2k_write_siz
-+#define opj_j2k_write_soc pdfium_opj_j2k_write_soc
-+#define opj_j2k_write_sod pdfium_opj_j2k_write_sod
-+#define opj_j2k_write_sot pdfium_opj_j2k_write_sot
-+#define opj_j2k_write_tlm pdfium_opj_j2k_write_tlm
-+#define opj_j2k_write_updated_tlm pdfium_opj_j2k_write_updated_tlm
-+#define opj_jp2_apply_cdef pdfium_opj_jp2_apply_cdef
-+#define opj_jp2_apply_pclr pdfium_opj_jp2_apply_pclr
-+#define opj_jp2_check_color pdfium_opj_jp2_check_color
-+#define opj_jp2_default_validation pdfium_opj_jp2_default_validation
-+#define opj_jp2_read_bpcc pdfium_opj_jp2_read_bpcc
-+#define opj_jp2_read_cdef pdfium_opj_jp2_read_cdef
-+#define opj_jp2_read_cmap pdfium_opj_jp2_read_cmap
-+#define opj_jp2_read_colr pdfium_opj_jp2_read_colr
-+#define opj_jp2_read_ftyp pdfium_opj_jp2_read_ftyp
-+#define opj_jp2_read_header_procedure pdfium_opj_jp2_read_header_procedure
-+#define opj_jp2_read_ihdr pdfium_opj_jp2_read_ihdr
-+#define opj_jp2_read_jp pdfium_opj_jp2_read_jp
-+#define opj_jp2_read_jp2h pdfium_opj_jp2_read_jp2h
-+#define opj_jp2_read_pclr pdfium_opj_jp2_read_pclr
-+#define opj_jp2_skip_jp2c pdfium_opj_jp2_skip_jp2c
-+#define opj_jp2_write_bpcc pdfium_opj_jp2_write_bpcc
-+#define opj_jp2_write_cdef pdfium_opj_jp2_write_cdef
-+#define opj_jp2_write_colr pdfium_opj_jp2_write_colr
-+#define opj_jp2_write_ftyp pdfium_opj_jp2_write_ftyp
-+#define opj_jp2_write_ihdr pdfium_opj_jp2_write_ihdr
-+#define opj_jp2_write_jp pdfium_opj_jp2_write_jp
-+#define opj_jp2_write_jp2c pdfium_opj_jp2_write_jp2c
-+#define opj_jp2_write_jp2h pdfium_opj_jp2_write_jp2h
-+#define opj_jpip_skip_iptr pdfium_opj_jpip_skip_iptr
-+#define opj_mct_norms pdfium_opj_mct_norms
-+#define opj_mct_norms_real pdfium_opj_mct_norms_real
-+#define opj_get_all_encoding_parameters pdfium_opj_get_all_encoding_parameters
-+#define opj_pi_check_next_level pdfium_opj_pi_check_next_level
-+#define opj_pi_create pdfium_opj_pi_create
-+#define opj_pi_update_encode_poc_and_final pdfium_opj_pi_update_encode_poc_and_final
-+#define opj_tcd_code_block_dec_deallocate pdfium_opj_tcd_code_block_dec_deallocate
-+#define opj_tcd_code_block_enc_deallocate pdfium_opj_tcd_code_block_enc_deallocate
-+#define opj_tcd_init_tile pdfium_opj_tcd_init_tile
-+#define opj_dwt_decode_h_func pdfium_opj_dwt_decode_h_func
-+#define opj_dwt_decode_v_func pdfium_opj_dwt_decode_v_func
-+#define opj_dwt_encode_1 pdfium_opj_dwt_encode_1
-+#define opj_dwt_encode_1_real pdfium_opj_dwt_encode_1_real
-+#define opj_dwt_encode_procedure pdfium_opj_dwt_encode_procedure
-+#define opj_dwt_init_sparse_array pdfium_opj_dwt_init_sparse_array
-+#define opj_dwt_norms pdfium_opj_dwt_norms
-+#define opj_dwt_norms_real pdfium_opj_dwt_norms_real
-+#define opj_idwt53_h pdfium_opj_idwt53_h
-+#define opj_idwt53_v pdfium_opj_idwt53_v
-+#define opj_v4dwt_decode pdfium_opj_v4dwt_decode
-+#define opj_v4dwt_interleave_h pdfium_opj_v4dwt_interleave_h
-+#define opj_sparse_array_int32_read_or_write pdfium_opj_sparse_array_int32_read_or_write
-+#define opj_t1_allocate_buffers pdfium_opj_t1_allocate_buffers
-+#define opj_t1_clbl_decode_processor pdfium_opj_t1_clbl_decode_processor
-+#define opj_t1_dec_clnpass pdfium_opj_t1_dec_clnpass
-+#define opj_t1_dec_clnpass_step pdfium_opj_t1_dec_clnpass_step
-+#define opj_t1_dec_sigpass_mqc pdfium_opj_t1_dec_sigpass_mqc
-+#define opj_t1_dec_sigpass_step_mqc pdfium_opj_t1_dec_sigpass_step_mqc
-+#define opj_t1_dec_sigpass_step_raw pdfium_opj_t1_dec_sigpass_step_raw
-+#define opj_t1_destroy_wrapper pdfium_opj_t1_destroy_wrapper
-+#define opj_t1_enc_clnpass_step pdfium_opj_t1_enc_clnpass_step
-+#define opj_t1_enc_sigpass_step pdfium_opj_t1_enc_sigpass_step
-+#define opj_t2_encode_packet pdfium_opj_t2_encode_packet
-+#define opj_t2_read_packet_header pdfium_opj_t2_read_packet_header
-+#define opj_stream_default_create pdfium_opj_stream_default_create
-+#define opj_create_compress pdfium_opj_create_compress
-+#define opj_decode_tile_data pdfium_opj_decode_tile_data
-+#define opj_stream_create pdfium_opj_stream_create
-+#define opj_setup_decoder pdfium_opj_setup_decoder
-+#define opj_image_data_alloc pdfium_opj_image_data_alloc
-+#define opj_image_tile_create pdfium_opj_image_tile_create
-+#define opj_end_decompress pdfium_opj_end_decompress
-+#define opj_has_thread_support pdfium_opj_has_thread_support
-+#define opj_destroy_codec pdfium_opj_destroy_codec
-+#define opj_read_header pdfium_opj_read_header
-+#define opj_image_destroy pdfium_opj_image_destroy
-+#define opj_end_compress pdfium_opj_end_compress
-+#define opj_stream_destroy pdfium_opj_stream_destroy
-+#define opj_destroy_cstr_info pdfium_opj_destroy_cstr_info
-+#define opj_set_MCT pdfium_opj_set_MCT
-+#define opj_get_decoded_tile pdfium_opj_get_decoded_tile
-+#define opj_image_create pdfium_opj_image_create
-+#define opj_stream_set_skip_function pdfium_opj_stream_set_skip_function
-+#define opj_encode pdfium_opj_encode
-+#define opj_stream_set_read_function pdfium_opj_stream_set_read_function
-+#define opj_set_error_handler pdfium_opj_set_error_handler
-+#define opj_stream_set_write_function pdfium_opj_stream_set_write_function
-+#define opj_set_warning_handler pdfium_opj_set_warning_handler
-+#define opj_destroy_cstr_index pdfium_opj_destroy_cstr_index
-+#define opj_set_decoded_resolution_factor pdfium_opj_set_decoded_resolution_factor
-+#define opj_get_cstr_info pdfium_opj_get_cstr_info
-+#define opj_read_tile_header pdfium_opj_read_tile_header
-+#define opj_stream_set_user_data pdfium_opj_stream_set_user_data
-+#define opj_image_data_free pdfium_opj_image_data_free
-+#define opj_write_tile pdfium_opj_write_tile
-+#define opj_start_compress pdfium_opj_start_compress
-+#define opj_stream_create_file_stream pdfium_opj_stream_create_file_stream
-+#define opj_stream_set_user_data_length pdfium_opj_stream_set_user_data_length
-+#define opj_codec_set_threads pdfium_opj_codec_set_threads
-+#define opj_get_num_cpus pdfium_opj_get_num_cpus
-+#define opj_decode pdfium_opj_decode
-+#define opj_dump_codec pdfium_opj_dump_codec
-+#define opj_set_info_handler pdfium_opj_set_info_handler
-+#define opj_set_decoded_components pdfium_opj_set_decoded_components
-+#define opj_version pdfium_opj_version
-+#define opj_set_default_decoder_parameters pdfium_opj_set_default_decoder_parameters
-+#define opj_create_decompress pdfium_opj_create_decompress
-+#define opj_setup_encoder pdfium_opj_setup_encoder
-+#define opj_stream_set_seek_function pdfium_opj_stream_set_seek_function
-+#define opj_set_default_encoder_parameters pdfium_opj_set_default_encoder_parameters
-+#define opj_stream_create_default_file_stream pdfium_opj_stream_create_default_file_stream
-+#define opj_get_cstr_index pdfium_opj_get_cstr_index
-+#define opj_set_decode_area pdfium_opj_set_decode_area
-+#define opj_calloc pdfium_opj_calloc
-+#define opj_aligned_free pdfium_opj_aligned_free
-+#define opj_aligned_malloc pdfium_opj_aligned_malloc
-+#define opj_malloc pdfium_opj_malloc
-+#define opj_aligned_32_malloc pdfium_opj_aligned_32_malloc
-+#define opj_free pdfium_opj_free
-+#define opj_realloc pdfium_opj_realloc
-diff --git a/third_party/libopenjpeg20/opj_malloc.cc b/third_party/libopenjpeg20/opj_malloc.cc
-index f530060..9bdf6e4 100644
---- a/third_party/libopenjpeg20/opj_malloc.cc
-+++ b/third_party/libopenjpeg20/opj_malloc.cc
-@@ -8,6 +8,8 @@
- #include "core/fxcrt/fx_memory.h"
- #include "third_party/base/memory/aligned_memory.h"
- 
-+#include "opj_config.h"
-+
- extern "C" {
- 
- void* opj_malloc(size_t size) {

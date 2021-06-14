@@ -6,7 +6,7 @@ DEPOT_TOOLS_URL="https://chromium.googlesource.com/chromium/tools/depot_tools.gi
 DEPOT_TOOLS_DIR="$PWD/depot_tools"
 PDFIUM_URL="https://pdfium.googlesource.com/pdfium.git"
 PDFIUM_DIR="$PWD/pdfium"
-REV="chromium/4272"
+REV="chromium/4538"
 PATCH_1="$PWD/code.patch"
 PATCH_2="$PWD/build_linux.patch"
 ARGS="$PWD/args_release_linux.gn"
@@ -18,7 +18,7 @@ if [ ! -d "$DEPOT_TOOLS_DIR" ]; then
 else 
   (cd "$DEPOT_TOOLS_DIR"; git checkout master; git pull)
 fi
-(cd "$DEPOT_TOOLS_DIR"; git checkout d1580d53b7bc1f244d4eaf797aca0d066fad166c)
+(cd "$DEPOT_TOOLS_DIR"; git checkout 6d099d543d26bef583e58c9f55a6cf7b6c5d6207)
 export PATH="$DEPOT_TOOLS_DIR:$PATH"
 
 # Checkout sources
