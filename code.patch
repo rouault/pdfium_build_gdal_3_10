@@ -1,5 +1,5 @@
 diff --git a/core/fpdfapi/page/cpdf_occontext.cpp b/core/fpdfapi/page/cpdf_occontext.cpp
-index 56592cbfe..4ddf3df1e 100644
+index 21b8ec60d..68b7cc919 100644
 --- a/core/fpdfapi/page/cpdf_occontext.cpp
 +++ b/core/fpdfapi/page/cpdf_occontext.cpp
 @@ -182,7 +182,7 @@ bool CPDF_OCContext::GetOCGVisible(const CPDF_Dictionary* pOCGDict) const {
@@ -12,7 +12,7 @@ index 56592cbfe..4ddf3df1e 100644
    for (size_t i = 0; i < pMarks->CountItems(); ++i) {
      const CPDF_ContentMarkItem* item = pMarks->GetItem(i);
 diff --git a/core/fpdfapi/page/cpdf_occontext.h b/core/fpdfapi/page/cpdf_occontext.h
-index 6083d31ca..07979deaf 100644
+index ab642c4c3..93e9ecc8a 100644
 --- a/core/fpdfapi/page/cpdf_occontext.h
 +++ b/core/fpdfapi/page/cpdf_occontext.h
 @@ -18,14 +18,20 @@ class CPDF_Dictionary;
@@ -29,7 +29,7 @@ index 6083d31ca..07979deaf 100644
 +
 +class CPDF_OCContext : public CPDF_OCContextInterface {
   public:
-   enum UsageType { View = 0, Design, Print, Export };
+   enum UsageType { kView = 0, kDesign, kPrint, kExport };
  
    CONSTRUCT_VIA_MAKE_RETAIN;
  
@@ -40,10 +40,10 @@ index 6083d31ca..07979deaf 100644
   private:
    CPDF_OCContext(CPDF_Document* pDoc, UsageType eUsageType);
 diff --git a/core/fpdfapi/render/cpdf_renderoptions.h b/core/fpdfapi/render/cpdf_renderoptions.h
-index 2a383a53d..62bffa082 100644
+index 185008a28..aa4346436 100644
 --- a/core/fpdfapi/render/cpdf_renderoptions.h
 +++ b/core/fpdfapi/render/cpdf_renderoptions.h
-@@ -66,17 +66,19 @@ class CPDF_RenderOptions {
+@@ -68,17 +68,19 @@ class CPDF_RenderOptions {
    void SetDrawAnnots(bool draw) { m_bDrawAnnots = draw; }
    bool GetDrawAnnots() const { return m_bDrawAnnots; }
  
@@ -67,10 +67,10 @@ index 2a383a53d..62bffa082 100644
  
  #endif  // CORE_FPDFAPI_RENDER_CPDF_RENDEROPTIONS_H_
 diff --git a/core/fpdfdoc/cpdf_annotlist.cpp b/core/fpdfdoc/cpdf_annotlist.cpp
-index e8b4c09d9..9ec31aec1 100644
+index 3ea2f5f1e..fbc94d36b 100644
 --- a/core/fpdfdoc/cpdf_annotlist.cpp
 +++ b/core/fpdfdoc/cpdf_annotlist.cpp
-@@ -246,7 +246,7 @@ void CPDF_AnnotList::DisplayPass(CPDF_Page* pPage,
+@@ -245,7 +245,7 @@ void CPDF_AnnotList::DisplayPass(CPDF_Page* pPage,
  
      if (pOptions) {
        const CPDF_Dictionary* pAnnotDict = pAnnot->GetAnnotDict();
@@ -80,10 +80,10 @@ index e8b4c09d9..9ec31aec1 100644
            !pOCContext->CheckOCGVisible(
                pAnnotDict->GetDictFor(pdfium::annotation::kOC))) {
 diff --git a/third_party/BUILD.gn b/third_party/BUILD.gn
-index f2c599941..6dab9a313 100644
+index 5e8a2c1f8..60358129d 100644
 --- a/third_party/BUILD.gn
 +++ b/third_party/BUILD.gn
-@@ -388,6 +388,12 @@ source_set("fx_libopenjpeg") {
+@@ -393,6 +393,12 @@ source_set("fx_libopenjpeg") {
      # Must be after no_chromium_code for warning flags to be ordered correctly.
      ":fx_libopenjpeg_warnings",
    ]

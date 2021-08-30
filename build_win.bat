@@ -4,7 +4,7 @@ set PATH=%CD%\depot_tools;%PATH%
 set DEPOT_TOOLS_WIN_TOOLCHAIN=0
 set DEPOT_TOOLS_URL=https://chromium.googlesource.com/chromium/tools/depot_tools.git
 set PDFIUM_URL=https://pdfium.googlesource.com/pdfium.git
-set REV=chromium/4538
+set REV=chromium/4627
 set INSTALL_DIR=%CD%\install
 
 REM Checkout
