@@ -1,8 +1,8 @@
 diff --git a/core/fpdfapi/page/cpdf_occontext.cpp b/core/fpdfapi/page/cpdf_occontext.cpp
-index 21b8ec60d..68b7cc919 100644
+index 1318ad8a9..c41208353 100644
 --- a/core/fpdfapi/page/cpdf_occontext.cpp
 +++ b/core/fpdfapi/page/cpdf_occontext.cpp
-@@ -182,7 +182,7 @@ bool CPDF_OCContext::GetOCGVisible(const CPDF_Dictionary* pOCGDict) const {
+@@ -169,7 +169,7 @@ bool CPDF_OCContext::GetOCGVisible(const CPDF_Dictionary* pOCGDict) const {
    return bState;
  }
  
@@ -12,7 +12,7 @@ index 21b8ec60d..68b7cc919 100644
    for (size_t i = 0; i < pMarks->CountItems(); ++i) {
      const CPDF_ContentMarkItem* item = pMarks->GetItem(i);
 diff --git a/core/fpdfapi/page/cpdf_occontext.h b/core/fpdfapi/page/cpdf_occontext.h
-index ab642c4c3..93e9ecc8a 100644
+index c8a5dad16..df3855647 100644
 --- a/core/fpdfapi/page/cpdf_occontext.h
 +++ b/core/fpdfapi/page/cpdf_occontext.h
 @@ -18,14 +18,20 @@ class CPDF_Dictionary;
@@ -66,24 +66,23 @@ index 185008a28..aa4346436 100644
  };
  
  #endif  // CORE_FPDFAPI_RENDER_CPDF_RENDEROPTIONS_H_
-diff --git a/core/fpdfdoc/cpdf_annotlist.cpp b/core/fpdfdoc/cpdf_annotlist.cpp
-index 3ea2f5f1e..fbc94d36b 100644
---- a/core/fpdfdoc/cpdf_annotlist.cpp
-+++ b/core/fpdfdoc/cpdf_annotlist.cpp
-@@ -245,7 +245,7 @@ void CPDF_AnnotList::DisplayPass(CPDF_Page* pPage,
+diff --git a/samples/pdfium_test_dump_helper.cc b/samples/pdfium_test_dump_helper.cc
+index 3f43a7fd9..054615686 100644
+--- a/samples/pdfium_test_dump_helper.cc
++++ b/samples/pdfium_test_dump_helper.cc
+@@ -7,6 +7,7 @@
+ #include <string.h>
  
-     if (pOptions) {
-       const CPDF_Dictionary* pAnnotDict = pAnnot->GetAnnotDict();
--      const CPDF_OCContext* pOCContext = pOptions->GetOCContext();
-+      const auto pOCContext = pOptions->GetOCContext();
-       if (pAnnotDict && pOCContext &&
-           !pOCContext->CheckOCGVisible(
-               pAnnotDict->GetDictFor(pdfium::annotation::kOC))) {
+ #include <algorithm>
++#include <climits>
+ #include <functional>
+ #include <string>
+ #include <utility>
 diff --git a/third_party/BUILD.gn b/third_party/BUILD.gn
-index 5e8a2c1f8..60358129d 100644
+index 6527102d8..05650840b 100644
 --- a/third_party/BUILD.gn
 +++ b/third_party/BUILD.gn
-@@ -393,6 +393,12 @@ source_set("fx_libopenjpeg") {
+@@ -400,6 +400,12 @@ source_set("fx_libopenjpeg") {
      # Must be after no_chromium_code for warning flags to be ordered correctly.
      ":fx_libopenjpeg_warnings",
    ]

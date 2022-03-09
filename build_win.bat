@@ -4,7 +4,7 @@ set PATH=%CD%\depot_tools;%PATH%
 set DEPOT_TOOLS_WIN_TOOLCHAIN=0
 set DEPOT_TOOLS_URL=https://chromium.googlesource.com/chromium/tools/depot_tools.git
 set PDFIUM_URL=https://pdfium.googlesource.com/pdfium.git
-set REV=chromium/4627
+set REV=chromium/4933
 set INSTALL_DIR=%CD%\install
 
 REM Checkout
@@ -35,6 +35,23 @@ FOR %%X IN (build constants fpdfsdk core\fxge core\fxge\agg core\fxge\dib core\f
   mkdir %INSTALL_DIR%\include\pdfium\%%X
   copy %%X\*.h %INSTALL_DIR%\include\pdfium\%%X
 )
+mkdir %INSTALL_DIR%\include\pdfium\third_party\abseil-cpp\absl\types
+copy third_party\abseil-cpp\absl\types\*.h  %INSTALL_DIR%\include\pdfium\third_party\abseil-cpp\absl\types
+mkdir %INSTALL_DIR%\include\pdfium\absl\base
+copy third_party\abseil-cpp\absl\base\*.h  %INSTALL_DIR%\include\pdfium\absl\base
+mkdir %INSTALL_DIR%\include\pdfium\absl\base\internal
+copy third_party\abseil-cpp\absl\base\internal\*.h  %INSTALL_DIR%\include\pdfium\absl\base\internal
+mkdir %INSTALL_DIR%\include\pdfium\absl\meta
+copy third_party\abseil-cpp\absl\meta\*.h  %INSTALL_DIR%\include\pdfium\absl\meta
+mkdir %INSTALL_DIR%\include\pdfium\absl\memory
+copy third_party\abseil-cpp\absl\memory\*.h  %INSTALL_DIR%\include\pdfium\absl\memory
+mkdir %INSTALL_DIR%\include\pdfium\absl\types
+copy third_party\abseil-cpp\absl\types\*.h  %INSTALL_DIR%\include\pdfium\absl\types
+mkdir %INSTALL_DIR%\include\pdfium\absl\types\internal
+copy third_party\abseil-cpp\absl\types\internal\*.h  %INSTALL_DIR%\include\pdfium\absl\types\internal
+mkdir %INSTALL_DIR%\include\pdfium\absl\utility
+copy third_party\abseil-cpp\absl\utility\*.h  %INSTALL_DIR%\include\pdfium\absl\utility
+
 
 REM Install library
 mkdir %INSTALL_DIR%\lib

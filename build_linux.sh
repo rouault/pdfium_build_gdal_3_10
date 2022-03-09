@@ -6,7 +6,7 @@ DEPOT_TOOLS_URL="https://chromium.googlesource.com/chromium/tools/depot_tools.gi
 DEPOT_TOOLS_DIR="$PWD/depot_tools"
 PDFIUM_URL="https://pdfium.googlesource.com/pdfium.git"
 PDFIUM_DIR="$PWD/pdfium"
-REV="chromium/4627"
+REV="chromium/4933"
 PATCH_1="$PWD/code.patch"
 PATCH_2="$PWD/build_linux.patch"
 ARGS="$PWD/args_release_linux.gn"
@@ -16,9 +16,9 @@ INSTALL_DIR="$PWD/install"
 if [ ! -d "$DEPOT_TOOLS_DIR" ]; then
   git clone "$DEPOT_TOOLS_URL" "$DEPOT_TOOLS_DIR"
 else 
-  (cd "$DEPOT_TOOLS_DIR"; git checkout master; git pull)
+  (cd "$DEPOT_TOOLS_DIR"; git checkout main; git pull)
 fi
-(cd "$DEPOT_TOOLS_DIR"; git checkout 6d099d543d26bef583e58c9f55a6cf7b6c5d6207)
+(cd "$DEPOT_TOOLS_DIR"; git checkout 8edc960e9acbaedbff28e323e77a4129817266b3)
 export PATH="$DEPOT_TOOLS_DIR:$PATH"
 
 # Checkout sources
@@ -45,6 +45,23 @@ for subdir in $HEADER_SUBDIRS; do
     mkdir -p "$INCLUDE_DIR/$subdir"
     cp "$subdir"/*.h "$INCLUDE_DIR/$subdir"
 done
+mkdir -p "$INCLUDE_DIR/third_party/abseil-cpp/absl/types"
+cp third_party/abseil-cpp/absl/types/*.h "$INCLUDE_DIR/third_party/abseil-cpp/absl/types"
+mkdir -p "$INCLUDE_DIR/absl/base"
+cp third_party/abseil-cpp/absl/base/*.h "$INCLUDE_DIR/absl/base"
+mkdir -p "$INCLUDE_DIR/absl/base/internal"
+cp third_party/abseil-cpp/absl/base/internal/*.h "$INCLUDE_DIR/absl/base/internal"
+mkdir -p "$INCLUDE_DIR/absl/meta"
+cp third_party/abseil-cpp/absl/meta/*.h "$INCLUDE_DIR/absl/meta"
+mkdir -p "$INCLUDE_DIR/absl/memory"
+cp third_party/abseil-cpp/absl/memory/*.h "$INCLUDE_DIR/absl/memory"
+mkdir -p "$INCLUDE_DIR/absl/types"
+cp third_party/abseil-cpp/absl/types/*.h "$INCLUDE_DIR/absl/types"
+mkdir -p "$INCLUDE_DIR/absl/types/internal"
+cp third_party/abseil-cpp/absl/types/internal/*.h "$INCLUDE_DIR/absl/types/internal"
+mkdir -p "$INCLUDE_DIR/absl/utility"
+cp third_party/abseil-cpp/absl/utility/*.h "$INCLUDE_DIR/absl/utility"
+
 # Install library
 mkdir -p "$INSTALL_DIR/lib"
 cp "$BUILD_DIR/obj/libpdfium.a" "$INSTALL_DIR/lib"

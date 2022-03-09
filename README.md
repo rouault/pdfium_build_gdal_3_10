@@ -25,7 +25,7 @@ Windows 10 SDK 10.0.19041.0 with the "Debugging Tools for Windows SDK 10" must a
 Run "git clone https://chromium.googlesource.com/chromium/tools/depot_tools.git"
 from this repository, which will create a depot_tools subdirectory.
 
-Then run "git checkout d1580d53b7bc1f244d4eaf797aca0d066fad166c" in that
+Then run "git checkout 8edc960e9acbaedbff28e323e77a4129817266b3" in that
 subdirectory.
 
 Run build_win.bat from cmd.exe with the environment variables set for the compiler
@@ -42,4 +42,4 @@ and pdfium.lib needed to build the GDAL PDF driver.
 
 # Pre-build binaries
 
-Pre-build binaries may be found at https://github.com/rouault/pdfium_build_gdal_3_4/releases
+Pre-build binaries may be found at https://github.com/rouault/pdfium_build_gdal_3_5/releases
