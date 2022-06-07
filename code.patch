@@ -66,18 +66,6 @@ index 185008a28..aa4346436 100644
  };
  
  #endif  // CORE_FPDFAPI_RENDER_CPDF_RENDEROPTIONS_H_
-diff --git a/samples/pdfium_test_dump_helper.cc b/samples/pdfium_test_dump_helper.cc
-index 3f43a7fd9..054615686 100644
---- a/samples/pdfium_test_dump_helper.cc
-+++ b/samples/pdfium_test_dump_helper.cc
-@@ -7,6 +7,7 @@
- #include <string.h>
- 
- #include <algorithm>
-+#include <climits>
- #include <functional>
- #include <string>
- #include <utility>
 diff --git a/third_party/BUILD.gn b/third_party/BUILD.gn
 index 6527102d8..05650840b 100644
 --- a/third_party/BUILD.gn
