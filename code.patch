@@ -1,21 +1,21 @@
 diff --git a/core/fpdfapi/page/cpdf_occontext.cpp b/core/fpdfapi/page/cpdf_occontext.cpp
-index 1318ad8a9..c41208353 100644
+index 7d2b35fa7..a18f35487 100644
 --- a/core/fpdfapi/page/cpdf_occontext.cpp
 +++ b/core/fpdfapi/page/cpdf_occontext.cpp
-@@ -169,7 +169,7 @@ bool CPDF_OCContext::GetOCGVisible(const CPDF_Dictionary* pOCGDict) const {
+@@ -171,7 +171,7 @@ bool CPDF_OCContext::GetOCGVisible(const CPDF_Dictionary* pOCGDict) const {
    return bState;
  }
  
--bool CPDF_OCContext::CheckObjectVisible(const CPDF_PageObject* pObj) const {
-+bool CPDF_OCContextInterface::CheckObjectVisible(const CPDF_PageObject* pObj) const {
+-bool CPDF_OCContext::CheckPageObjectVisible(const CPDF_PageObject* pObj) const {
++bool CPDF_OCContextInterface::CheckPageObjectVisible(const CPDF_PageObject* pObj) const {
    const CPDF_ContentMarks* pMarks = pObj->GetContentMarks();
    for (size_t i = 0; i < pMarks->CountItems(); ++i) {
      const CPDF_ContentMarkItem* item = pMarks->GetItem(i);
 diff --git a/core/fpdfapi/page/cpdf_occontext.h b/core/fpdfapi/page/cpdf_occontext.h
-index c8a5dad16..df3855647 100644
+index c0012d1ec..bcd2dd7a9 100644
 --- a/core/fpdfapi/page/cpdf_occontext.h
 +++ b/core/fpdfapi/page/cpdf_occontext.h
-@@ -18,14 +18,20 @@ class CPDF_Dictionary;
+@@ -19,14 +19,20 @@ class CPDF_Dictionary;
  class CPDF_Document;
  class CPDF_PageObject;
  
@@ -23,27 +23,27 @@ index c8a5dad16..df3855647 100644
 +class CPDF_OCContextInterface : public Retainable {
 + public:
 +  virtual ~CPDF_OCContextInterface() = default;
-+  virtual bool CheckOCGVisible(const CPDF_Dictionary* pOCGDict) const = 0;
-+  virtual bool CheckObjectVisible(const CPDF_PageObject* pObj) const;
++  virtual bool CheckOCGDictVisible(const CPDF_Dictionary* pOCGDict) const = 0;
++  bool CheckPageObjectVisible(const CPDF_PageObject* pObj) const;
 +};
 +
-+class CPDF_OCContext : public CPDF_OCContextInterface {
++class CPDF_OCContext final : public CPDF_OCContextInterface {
   public:
    enum UsageType { kView = 0, kDesign, kPrint, kExport };
  
    CONSTRUCT_VIA_MAKE_RETAIN;
  
--  bool CheckOCGVisible(const CPDF_Dictionary* pOCGDict) const;
--  bool CheckObjectVisible(const CPDF_PageObject* pObj) const;
-+  bool CheckOCGVisible(const CPDF_Dictionary* pOCGDict) const override;
+-  bool CheckOCGDictVisible(const CPDF_Dictionary* pOCGDict) const;
+-  bool CheckPageObjectVisible(const CPDF_PageObject* pObj) const;
++  bool CheckOCGDictVisible(const CPDF_Dictionary* pOCGDict) const override;
  
   private:
    CPDF_OCContext(CPDF_Document* pDoc, UsageType eUsageType);
 diff --git a/core/fpdfapi/render/cpdf_renderoptions.h b/core/fpdfapi/render/cpdf_renderoptions.h
-index 185008a28..aa4346436 100644
+index 12eb91ad8..462b5c827 100644
 --- a/core/fpdfapi/render/cpdf_renderoptions.h
 +++ b/core/fpdfapi/render/cpdf_renderoptions.h
-@@ -68,17 +68,19 @@ class CPDF_RenderOptions {
+@@ -72,7 +72,7 @@ class CPDF_RenderOptions {
    void SetDrawAnnots(bool draw) { m_bDrawAnnots = draw; }
    bool GetDrawAnnots() const { return m_bDrawAnnots; }
  
@@ -51,35 +51,169 @@ index 185008a28..aa4346436 100644
 +  void SetOCContext(RetainPtr<CPDF_OCContextInterface> context) {
      m_pOCContext = context;
    }
--  const CPDF_OCContext* GetOCContext() const { return m_pOCContext.Get(); }
-+  const CPDF_OCContextInterface* GetOCContext() const {
-+    return m_pOCContext.Get();
-+  }
  
-  private:
-   Type m_ColorMode = kNormal;
+@@ -81,7 +81,7 @@ class CPDF_RenderOptions {
    bool m_bDrawAnnots = false;
    Options m_Options;
-   ColorScheme m_ColorScheme;
+   ColorScheme m_ColorScheme = {};
 -  RetainPtr<CPDF_OCContext> m_pOCContext;
 +  RetainPtr<CPDF_OCContextInterface> m_pOCContext;
  };
  
  #endif  // CORE_FPDFAPI_RENDER_CPDF_RENDEROPTIONS_H_
-diff --git a/third_party/BUILD.gn b/third_party/BUILD.gn
-index 6527102d8..05650840b 100644
---- a/third_party/BUILD.gn
-+++ b/third_party/BUILD.gn
-@@ -400,6 +400,12 @@ source_set("fx_libopenjpeg") {
-     # Must be after no_chromium_code for warning flags to be ordered correctly.
-     ":fx_libopenjpeg_warnings",
-   ]
-+
-+  if (is_posix) {
-+    configs +=
-+        [ "//build/config/gcc:symbol_visibility_hidden" ]
-+  }
-+
-   sources = [
-     "libopenjpeg20/bio.c",
-     "libopenjpeg20/cio.c",
+diff --git a/core/fxge/agg/fx_agg_driver.cpp b/core/fxge/agg/fx_agg_driver.cpp
+index 4668659e9..47cb85155 100644
+--- a/core/fxge/agg/fx_agg_driver.cpp
++++ b/core/fxge/agg/fx_agg_driver.cpp
+@@ -976,7 +976,7 @@ void CFX_AggDeviceDriver::InitPlatform() {}
+ void CFX_AggDeviceDriver::DestroyPlatform() {}
+ 
+ bool CFX_AggDeviceDriver::DrawDeviceText(
+-    pdfium::span<const TextCharPos> pCharPos,
++    const pdfium::span<const TextCharPos>& pCharPos,
+     CFX_Font* pFont,
+     const CFX_Matrix& mtObject2Device,
+     float font_size,
+diff --git a/core/fxge/agg/fx_agg_driver.h b/core/fxge/agg/fx_agg_driver.h
+index caa63cbfa..a594bfa5d 100644
+--- a/core/fxge/agg/fx_agg_driver.h
++++ b/core/fxge/agg/fx_agg_driver.h
+@@ -87,7 +87,7 @@ class CFX_AggDeviceDriver final : public RenderDeviceDriverIface {
+                    BlendMode blend_type) override;
+   bool ContinueDIBits(CFX_ImageRenderer* handle,
+                       PauseIndicatorIface* pPause) override;
+-  bool DrawDeviceText(pdfium::span<const TextCharPos> pCharPos,
++  bool DrawDeviceText(const pdfium::span<const TextCharPos>& pCharPos,
+                       CFX_Font* pFont,
+                       const CFX_Matrix& mtObject2Device,
+                       float font_size,
+diff --git a/core/fxge/cfx_renderdevice.cpp b/core/fxge/cfx_renderdevice.cpp
+index 10129b33b..6718998be 100644
+--- a/core/fxge/cfx_renderdevice.cpp
++++ b/core/fxge/cfx_renderdevice.cpp
+@@ -1028,7 +1028,7 @@ bool CFX_RenderDevice::SetBitsWithMask(const RetainPtr<CFX_DIBBase>& pBitmap,
+ }
+ #endif
+ 
+-bool CFX_RenderDevice::DrawNormalText(pdfium::span<const TextCharPos> pCharPos,
++bool CFX_RenderDevice::DrawNormalText(const pdfium::span<const TextCharPos>& pCharPos,
+                                       CFX_Font* pFont,
+                                       float font_size,
+                                       const CFX_Matrix& mtText2Device,
+diff --git a/core/fxge/cfx_renderdevice.h b/core/fxge/cfx_renderdevice.h
+index 909cbb2a3..60580f5c6 100644
+--- a/core/fxge/cfx_renderdevice.h
++++ b/core/fxge/cfx_renderdevice.h
+@@ -153,7 +153,7 @@ class CFX_RenderDevice {
+                             BlendMode blend_mode);
+   bool ContinueDIBits(CFX_ImageRenderer* handle, PauseIndicatorIface* pPause);
+ 
+-  bool DrawNormalText(pdfium::span<const TextCharPos> pCharPos,
++  bool DrawNormalText(const pdfium::span<const TextCharPos>& pCharPos,
+                       CFX_Font* pFont,
+                       float font_size,
+                       const CFX_Matrix& mtText2Device,
+diff --git a/core/fxge/renderdevicedriver_iface.cpp b/core/fxge/renderdevicedriver_iface.cpp
+index 26911a631..e2d9e6510 100644
+--- a/core/fxge/renderdevicedriver_iface.cpp
++++ b/core/fxge/renderdevicedriver_iface.cpp
+@@ -50,7 +50,7 @@ bool RenderDeviceDriverIface::ContinueDIBits(CFX_ImageRenderer* handle,
+ }
+ 
+ bool RenderDeviceDriverIface::DrawDeviceText(
+-    pdfium::span<const TextCharPos> pCharPos,
++    const pdfium::span<const TextCharPos>& pCharPos,
+     CFX_Font* pFont,
+     const CFX_Matrix& mtObject2Device,
+     float font_size,
+diff --git a/core/fxge/renderdevicedriver_iface.h b/core/fxge/renderdevicedriver_iface.h
+index c22fe54a3..5c38e8286 100644
+--- a/core/fxge/renderdevicedriver_iface.h
++++ b/core/fxge/renderdevicedriver_iface.h
+@@ -96,7 +96,7 @@ class RenderDeviceDriverIface {
+                            BlendMode blend_type) = 0;
+   virtual bool ContinueDIBits(CFX_ImageRenderer* handle,
+                               PauseIndicatorIface* pPause);
+-  virtual bool DrawDeviceText(pdfium::span<const TextCharPos> pCharPos,
++  virtual bool DrawDeviceText(const pdfium::span<const TextCharPos>& pCharPos,
+                               CFX_Font* pFont,
+                               const CFX_Matrix& mtObject2Device,
+                               float font_size,
+diff --git a/core/fxge/win32/cgdi_printer_driver.cpp b/core/fxge/win32/cgdi_printer_driver.cpp
+index ae431c24d..cc76773a7 100644
+--- a/core/fxge/win32/cgdi_printer_driver.cpp
++++ b/core/fxge/win32/cgdi_printer_driver.cpp
+@@ -169,7 +169,7 @@ bool CGdiPrinterDriver::StartDIBits(const RetainPtr<CFX_DIBBase>& pSource,
+ }
+ 
+ bool CGdiPrinterDriver::DrawDeviceText(
+-    pdfium::span<const TextCharPos> pCharPos,
++    const pdfium::span<const TextCharPos>& pCharPos,
+     CFX_Font* pFont,
+     const CFX_Matrix& mtObject2Device,
+     float font_size,
+diff --git a/core/fxge/win32/cgdi_printer_driver.h b/core/fxge/win32/cgdi_printer_driver.h
+index 5c4cfc067..3e0551957 100644
+--- a/core/fxge/win32/cgdi_printer_driver.h
++++ b/core/fxge/win32/cgdi_printer_driver.h
+@@ -43,7 +43,7 @@ class CGdiPrinterDriver final : public CGdiDeviceDriver {
+                    const FXDIB_ResampleOptions& options,
+                    std::unique_ptr<CFX_ImageRenderer>* handle,
+                    BlendMode blend_type) override;
+-  bool DrawDeviceText(pdfium::span<const TextCharPos> pCharPos,
++  bool DrawDeviceText(const pdfium::span<const TextCharPos>& pCharPos,
+                       CFX_Font* pFont,
+                       const CFX_Matrix& mtObject2Device,
+                       float font_size,
+diff --git a/core/fxge/win32/cps_printer_driver.cpp b/core/fxge/win32/cps_printer_driver.cpp
+index c7c221ce6..fef644505 100644
+--- a/core/fxge/win32/cps_printer_driver.cpp
++++ b/core/fxge/win32/cps_printer_driver.cpp
+@@ -201,7 +201,7 @@ bool CPSPrinterDriver::StartDIBits(const RetainPtr<CFX_DIBBase>& pBitmap,
+ }
+ 
+ bool CPSPrinterDriver::DrawDeviceText(
+-    pdfium::span<const TextCharPos> pCharPos,
++    const pdfium::span<const TextCharPos>& pCharPos,
+     CFX_Font* pFont,
+     const CFX_Matrix& mtObject2Device,
+     float font_size,
+diff --git a/core/fxge/win32/cps_printer_driver.h b/core/fxge/win32/cps_printer_driver.h
+index fbadc6d38..6781ff8de 100644
+--- a/core/fxge/win32/cps_printer_driver.h
++++ b/core/fxge/win32/cps_printer_driver.h
+@@ -67,7 +67,7 @@ class CPSPrinterDriver final : public RenderDeviceDriverIface {
+                    const FXDIB_ResampleOptions& options,
+                    std::unique_ptr<CFX_ImageRenderer>* handle,
+                    BlendMode blend_type) override;
+-  bool DrawDeviceText(pdfium::span<const TextCharPos> pCharPos,
++  bool DrawDeviceText(const pdfium::span<const TextCharPos>& pCharPos,
+                       CFX_Font* pFont,
+                       const CFX_Matrix& mtObject2Device,
+                       float font_size,
+diff --git a/core/fxge/win32/ctext_only_printer_driver.cpp b/core/fxge/win32/ctext_only_printer_driver.cpp
+index a1291857e..6f9ea87ac 100644
+--- a/core/fxge/win32/ctext_only_printer_driver.cpp
++++ b/core/fxge/win32/ctext_only_printer_driver.cpp
+@@ -125,7 +125,7 @@ bool CTextOnlyPrinterDriver::StartDIBits(
+ }
+ 
+ bool CTextOnlyPrinterDriver::DrawDeviceText(
+-    pdfium::span<const TextCharPos> pCharPos,
++    const pdfium::span<const TextCharPos>& pCharPos,
+     CFX_Font* pFont,
+     const CFX_Matrix& mtObject2Device,
+     float font_size,
+diff --git a/core/fxge/win32/ctext_only_printer_driver.h b/core/fxge/win32/ctext_only_printer_driver.h
+index 7b404b049..9a7a929bb 100644
+--- a/core/fxge/win32/ctext_only_printer_driver.h
++++ b/core/fxge/win32/ctext_only_printer_driver.h
+@@ -58,7 +58,7 @@ class CTextOnlyPrinterDriver final : public RenderDeviceDriverIface {
+                    const FXDIB_ResampleOptions& options,
+                    std::unique_ptr<CFX_ImageRenderer>* handle,
+                    BlendMode blend_type) override;
+-  bool DrawDeviceText(pdfium::span<const TextCharPos> pCharPos,
++  bool DrawDeviceText(const pdfium::span<const TextCharPos>& pCharPos,
+                       CFX_Font* pFont,
+                       const CFX_Matrix& mtObject2Device,
+                       float font_size,

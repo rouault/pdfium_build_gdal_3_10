@@ -25,14 +25,14 @@ Windows 10 SDK 10.0.19041.0 with the "Debugging Tools for Windows SDK 10" must a
 Run "git clone https://chromium.googlesource.com/chromium/tools/depot_tools.git"
 from this repository, which will create a depot_tools subdirectory.
 
-Then run "git checkout 138bff2823590b3f3db440425bf712392defb7de" in that
+Then run "git checkout 25334bb18e549fef8c1516ac270e9bbfa3fd655b" in that
 subdirectory.
 
 Run build_win.bat from cmd.exe with the environment variables set for the compiler
 you use (or from the "x64 Native tools Command Prompt for VS2019" entry)
 
 Note: if the console remains stuck on the stage
-"""Downloading CIPD client for windows-amd64 from https://chrome-infra-packages.appspot.com/client?platform=windows-amd64&version=git_revision:0323cbe1ef467af36aa6784f2315c5ee36e89e34..."""
+"""Downloading CIPD client for windows-amd64 from https://chrome-infra-packages.appspot.com/client?platform=windows-amd64&version=git_revision:89ada246fcbf10f330011e4991d017332af2365b..."""
 and multiple error messages mentionning it can not be downloaded,
 just manually download the file at the above URL, rename it as .cipd_client.exe in the depot_tools directory
 and re-run build_win.bat

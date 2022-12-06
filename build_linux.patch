@@ -1,8 +1,8 @@
 diff --git a/config/BUILDCONFIG.gn b/config/BUILDCONFIG.gn
-index e011502..ae5758e 100644
+index a373e55a3..2b7372250 100644
 --- a/config/BUILDCONFIG.gn
 +++ b/config/BUILDCONFIG.gn
-@@ -453,10 +453,10 @@ if (is_win) {
+@@ -366,10 +366,10 @@ if (is_win) {
  }
  
  if (is_posix) {

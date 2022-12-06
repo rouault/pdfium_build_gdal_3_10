@@ -6,7 +6,7 @@ DEPOT_TOOLS_URL="https://chromium.googlesource.com/chromium/tools/depot_tools.gi
 DEPOT_TOOLS_DIR="$PWD/depot_tools"
 PDFIUM_URL="https://pdfium.googlesource.com/pdfium.git"
 PDFIUM_DIR="$PWD/pdfium"
-REV="chromium/5106"
+REV="chromium/5461"
 PATCH_1="$PWD/code.patch"
 PATCH_2="$PWD/build_linux.patch"
 ARGS="$PWD/args_release_linux.gn"
@@ -18,7 +18,7 @@ if [ ! -d "$DEPOT_TOOLS_DIR" ]; then
 else 
   (cd "$DEPOT_TOOLS_DIR"; git checkout main; git pull)
 fi
-(cd "$DEPOT_TOOLS_DIR"; git checkout 138bff2823590b3f3db440425bf712392defb7de)
+(cd "$DEPOT_TOOLS_DIR"; git checkout 25334bb18e549fef8c1516ac270e9bbfa3fd655b)
 export PATH="$DEPOT_TOOLS_DIR:$PATH"
 
 # Checkout sources
@@ -40,7 +40,7 @@ ninja -C "$BUILD_DIR" pdfium_all
 INCLUDE_DIR="$INSTALL_DIR/include/pdfium"
 mkdir -p "$INCLUDE_DIR"
 cp -r public "$INCLUDE_DIR"
-HEADER_SUBDIRS="build constants fpdfsdk core/fxge core/fxge/agg core/fxge/dib core/fpdfdoc core/fpdfapi/parser core/fpdfapi/page core/fpdfapi/render core/fxcrt third_party/agg23 third_party/base third_party/base/allocator/partition_allocator third_party/base/numerics"
+HEADER_SUBDIRS="build constants fpdfsdk core/fxge core/fxge/agg core/fxge/dib core/fpdfdoc core/fpdfapi/parser core/fpdfapi/page core/fpdfapi/render core/fxcrt third_party/agg23 third_party/base third_party/base/numerics"
 for subdir in $HEADER_SUBDIRS; do
     mkdir -p "$INCLUDE_DIR/$subdir"
     cp "$subdir"/*.h "$INCLUDE_DIR/$subdir"
