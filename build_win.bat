@@ -4,7 +4,7 @@ set PATH=%CD%\depot_tools;%PATH%
 set DEPOT_TOOLS_WIN_TOOLCHAIN=0
 set DEPOT_TOOLS_URL=https://chromium.googlesource.com/chromium/tools/depot_tools.git
 set PDFIUM_URL=https://pdfium.googlesource.com/pdfium.git
-set REV=chromium/5461
+set REV=chromium/5952
 set INSTALL_DIR=%CD%\install
 
 REM Checkout
@@ -37,6 +37,8 @@ FOR %%X IN (build constants fpdfsdk core\fxge core\fxge\agg core\fxge\dib core\f
 )
 mkdir %INSTALL_DIR%\include\pdfium\third_party\abseil-cpp\absl\types
 copy third_party\abseil-cpp\absl\types\*.h  %INSTALL_DIR%\include\pdfium\third_party\abseil-cpp\absl\types
+mkdir %INSTALL_DIR%\include\pdfium\third_party\base\containers
+copy third_party\base\containers\*.h  %INSTALL_DIR%\include\pdfium\third_party\base\containers
 mkdir %INSTALL_DIR%\include\pdfium\absl\base
 copy third_party\abseil-cpp\absl\base\*.h  %INSTALL_DIR%\include\pdfium\absl\base
 mkdir %INSTALL_DIR%\include\pdfium\absl\base\internal

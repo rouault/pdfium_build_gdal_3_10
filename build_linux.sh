@@ -6,7 +6,7 @@ DEPOT_TOOLS_URL="https://chromium.googlesource.com/chromium/tools/depot_tools.gi
 DEPOT_TOOLS_DIR="$PWD/depot_tools"
 PDFIUM_URL="https://pdfium.googlesource.com/pdfium.git"
 PDFIUM_DIR="$PWD/pdfium"
-REV="chromium/5461"
+REV="chromium/5952"
 PATCH_1="$PWD/code.patch"
 PATCH_2="$PWD/build_linux.patch"
 ARGS="$PWD/args_release_linux.gn"
@@ -18,7 +18,7 @@ if [ ! -d "$DEPOT_TOOLS_DIR" ]; then
 else 
   (cd "$DEPOT_TOOLS_DIR"; git checkout main; git pull)
 fi
-(cd "$DEPOT_TOOLS_DIR"; git checkout 25334bb18e549fef8c1516ac270e9bbfa3fd655b)
+(cd "$DEPOT_TOOLS_DIR"; git checkout 1c4052d88ac510a3db4351e52c088cac524c726c)
 export PATH="$DEPOT_TOOLS_DIR:$PATH"
 
 # Checkout sources
@@ -47,6 +47,8 @@ for subdir in $HEADER_SUBDIRS; do
 done
 mkdir -p "$INCLUDE_DIR/third_party/abseil-cpp/absl/types"
 cp third_party/abseil-cpp/absl/types/*.h "$INCLUDE_DIR/third_party/abseil-cpp/absl/types"
+mkdir -p "$INCLUDE_DIR/third_party/base/containers"
+cp third_party/base/containers/*.h "$INCLUDE_DIR/third_party/base/containers"
 mkdir -p "$INCLUDE_DIR/absl/base"
 cp third_party/abseil-cpp/absl/base/*.h "$INCLUDE_DIR/absl/base"
 mkdir -p "$INCLUDE_DIR/absl/base/internal"

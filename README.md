@@ -20,7 +20,7 @@ and libpdfium.a needed to build the GDAL PDF driver
 # Windows
 
 Tested with Windows 10, with Visual Studio 2019 community edition, x86_64 build.
-Windows 10 SDK 10.0.19041.0 with the "Debugging Tools for Windows SDK 10" must also be installed.
+Windows 10 SDK 10.0.22621 with the "Debugging Tools for Windows SDK 10" must also be installed.
 
 Run "git clone https://chromium.googlesource.com/chromium/tools/depot_tools.git"
 from this repository, which will create a depot_tools subdirectory.
@@ -42,4 +42,4 @@ and pdfium.lib needed to build the GDAL PDF driver.
 
 # Pre-build binaries
 
-Pre-build binaries may be found at https://github.com/rouault/pdfium_build_gdal_3_5/releases
+Pre-build binaries may be found at https://github.com/rouault/pdfium_build_gdal_3_8/releases

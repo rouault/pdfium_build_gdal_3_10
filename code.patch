@@ -1,3 +1,17 @@
+diff --git a/build_overrides/partition_alloc.gni b/build_overrides/partition_alloc.gni
+index 56f913c7f..a7d81e7b0 100644
+--- a/build_overrides/partition_alloc.gni
++++ b/build_overrides/partition_alloc.gni
+@@ -11,6 +11,9 @@ _is_using_sanitizers = is_asan || is_hwasan || is_lsan || is_tsan || is_msan
+ # TODO(https://crbug.com/pdfium/2068) - make work with windows.
+ _use_shim = !_is_using_sanitizers && !is_win
+ 
++# Overriden for GDAL: _use_shim=true causes crashes at runtime
++_use_shim = false
++
+ # See base/allocator/partition_allocator/external_builds.md
+ use_allocator_shim_default = _use_shim
+ use_partition_alloc_as_malloc_default = _use_shim
 diff --git a/core/fpdfapi/page/cpdf_occontext.cpp b/core/fpdfapi/page/cpdf_occontext.cpp
 index 7d2b35fa7..a18f35487 100644
 --- a/core/fpdfapi/page/cpdf_occontext.cpp
@@ -62,10 +76,10 @@ index 12eb91ad8..462b5c827 100644
  
  #endif  // CORE_FPDFAPI_RENDER_CPDF_RENDEROPTIONS_H_
 diff --git a/core/fxge/agg/fx_agg_driver.cpp b/core/fxge/agg/fx_agg_driver.cpp
-index 4668659e9..47cb85155 100644
+index 592764341..447013841 100644
 --- a/core/fxge/agg/fx_agg_driver.cpp
 +++ b/core/fxge/agg/fx_agg_driver.cpp
-@@ -976,7 +976,7 @@ void CFX_AggDeviceDriver::InitPlatform() {}
+@@ -989,7 +989,7 @@ void CFX_AggDeviceDriver::InitPlatform() {}
  void CFX_AggDeviceDriver::DestroyPlatform() {}
  
  bool CFX_AggDeviceDriver::DrawDeviceText(
@@ -75,10 +89,10 @@ index 4668659e9..47cb85155 100644
      const CFX_Matrix& mtObject2Device,
      float font_size,
 diff --git a/core/fxge/agg/fx_agg_driver.h b/core/fxge/agg/fx_agg_driver.h
-index caa63cbfa..a594bfa5d 100644
+index 523bb0ca9..9452a3ab4 100644
 --- a/core/fxge/agg/fx_agg_driver.h
 +++ b/core/fxge/agg/fx_agg_driver.h
-@@ -87,7 +87,7 @@ class CFX_AggDeviceDriver final : public RenderDeviceDriverIface {
+@@ -91,7 +91,7 @@ class CFX_AggDeviceDriver final : public RenderDeviceDriverIface {
                     BlendMode blend_type) override;
    bool ContinueDIBits(CFX_ImageRenderer* handle,
                        PauseIndicatorIface* pPause) override;
@@ -88,10 +102,10 @@ index caa63cbfa..a594bfa5d 100644
                        const CFX_Matrix& mtObject2Device,
                        float font_size,
 diff --git a/core/fxge/cfx_renderdevice.cpp b/core/fxge/cfx_renderdevice.cpp
-index 10129b33b..6718998be 100644
+index ef404a967..95e63cae4 100644
 --- a/core/fxge/cfx_renderdevice.cpp
 +++ b/core/fxge/cfx_renderdevice.cpp
-@@ -1028,7 +1028,7 @@ bool CFX_RenderDevice::SetBitsWithMask(const RetainPtr<CFX_DIBBase>& pBitmap,
+@@ -1004,7 +1004,7 @@ bool CFX_RenderDevice::SetBitsWithMask(const RetainPtr<CFX_DIBBase>& pBitmap,
  }
  #endif
  
@@ -101,7 +115,7 @@ index 10129b33b..6718998be 100644
                                        float font_size,
                                        const CFX_Matrix& mtText2Device,
 diff --git a/core/fxge/cfx_renderdevice.h b/core/fxge/cfx_renderdevice.h
-index 909cbb2a3..60580f5c6 100644
+index 5782f9558..1b465e368 100644
 --- a/core/fxge/cfx_renderdevice.h
 +++ b/core/fxge/cfx_renderdevice.h
 @@ -153,7 +153,7 @@ class CFX_RenderDevice {
@@ -114,7 +128,7 @@ index 909cbb2a3..60580f5c6 100644
                        float font_size,
                        const CFX_Matrix& mtText2Device,
 diff --git a/core/fxge/renderdevicedriver_iface.cpp b/core/fxge/renderdevicedriver_iface.cpp
-index 26911a631..e2d9e6510 100644
+index b549ea256..c4c00257b 100644
 --- a/core/fxge/renderdevicedriver_iface.cpp
 +++ b/core/fxge/renderdevicedriver_iface.cpp
 @@ -50,7 +50,7 @@ bool RenderDeviceDriverIface::ContinueDIBits(CFX_ImageRenderer* handle,
@@ -127,7 +141,7 @@ index 26911a631..e2d9e6510 100644
      const CFX_Matrix& mtObject2Device,
      float font_size,
 diff --git a/core/fxge/renderdevicedriver_iface.h b/core/fxge/renderdevicedriver_iface.h
-index c22fe54a3..5c38e8286 100644
+index a25eca38e..a7cf5114d 100644
 --- a/core/fxge/renderdevicedriver_iface.h
 +++ b/core/fxge/renderdevicedriver_iface.h
 @@ -96,7 +96,7 @@ class RenderDeviceDriverIface {
@@ -140,10 +154,10 @@ index c22fe54a3..5c38e8286 100644
                                const CFX_Matrix& mtObject2Device,
                                float font_size,
 diff --git a/core/fxge/win32/cgdi_printer_driver.cpp b/core/fxge/win32/cgdi_printer_driver.cpp
-index ae431c24d..cc76773a7 100644
+index 28bc516bc..fbd312c8b 100644
 --- a/core/fxge/win32/cgdi_printer_driver.cpp
 +++ b/core/fxge/win32/cgdi_printer_driver.cpp
-@@ -169,7 +169,7 @@ bool CGdiPrinterDriver::StartDIBits(const RetainPtr<CFX_DIBBase>& pSource,
+@@ -155,7 +155,7 @@ bool CGdiPrinterDriver::StartDIBits(const RetainPtr<CFX_DIBBase>& pSource,
  }
  
  bool CGdiPrinterDriver::DrawDeviceText(
@@ -166,7 +180,7 @@ index 5c4cfc067..3e0551957 100644
                        const CFX_Matrix& mtObject2Device,
                        float font_size,
 diff --git a/core/fxge/win32/cps_printer_driver.cpp b/core/fxge/win32/cps_printer_driver.cpp
-index c7c221ce6..fef644505 100644
+index f30b80ddb..ef12db962 100644
 --- a/core/fxge/win32/cps_printer_driver.cpp
 +++ b/core/fxge/win32/cps_printer_driver.cpp
 @@ -201,7 +201,7 @@ bool CPSPrinterDriver::StartDIBits(const RetainPtr<CFX_DIBBase>& pBitmap,
@@ -179,7 +193,7 @@ index c7c221ce6..fef644505 100644
      const CFX_Matrix& mtObject2Device,
      float font_size,
 diff --git a/core/fxge/win32/cps_printer_driver.h b/core/fxge/win32/cps_printer_driver.h
-index fbadc6d38..6781ff8de 100644
+index 4e2849760..8f32e0033 100644
 --- a/core/fxge/win32/cps_printer_driver.h
 +++ b/core/fxge/win32/cps_printer_driver.h
 @@ -67,7 +67,7 @@ class CPSPrinterDriver final : public RenderDeviceDriverIface {
@@ -192,7 +206,7 @@ index fbadc6d38..6781ff8de 100644
                        const CFX_Matrix& mtObject2Device,
                        float font_size,
 diff --git a/core/fxge/win32/ctext_only_printer_driver.cpp b/core/fxge/win32/ctext_only_printer_driver.cpp
-index a1291857e..6f9ea87ac 100644
+index 7689f3f3c..b6ae57ff0 100644
 --- a/core/fxge/win32/ctext_only_printer_driver.cpp
 +++ b/core/fxge/win32/ctext_only_printer_driver.cpp
 @@ -125,7 +125,7 @@ bool CTextOnlyPrinterDriver::StartDIBits(
@@ -205,7 +219,7 @@ index a1291857e..6f9ea87ac 100644
      const CFX_Matrix& mtObject2Device,
      float font_size,
 diff --git a/core/fxge/win32/ctext_only_printer_driver.h b/core/fxge/win32/ctext_only_printer_driver.h
-index 7b404b049..9a7a929bb 100644
+index e029a7cc4..93b1760dc 100644
 --- a/core/fxge/win32/ctext_only_printer_driver.h
 +++ b/core/fxge/win32/ctext_only_printer_driver.h
 @@ -58,7 +58,7 @@ class CTextOnlyPrinterDriver final : public RenderDeviceDriverIface {
