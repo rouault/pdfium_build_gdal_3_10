@@ -25,7 +25,7 @@ Windows 10 SDK 10.0.22621 with the "Debugging Tools for Windows SDK 10" must als
 Run "git clone https://chromium.googlesource.com/chromium/tools/depot_tools.git"
 from this repository, which will create a depot_tools subdirectory.
 
-Then run "git checkout 25334bb18e549fef8c1516ac270e9bbfa3fd655b" in that
+Then run "git checkout 9d7c8e76f82ddc6a3bbc307217e31dec44a0f73a" in that
 subdirectory.
 
 Run build_win.bat from cmd.exe with the environment variables set for the compiler
