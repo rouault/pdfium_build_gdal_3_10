@@ -6,7 +6,7 @@ DEPOT_TOOLS_URL="https://chromium.googlesource.com/chromium/tools/depot_tools.gi
 DEPOT_TOOLS_DIR="$PWD/depot_tools"
 PDFIUM_URL="https://pdfium.googlesource.com/pdfium.git"
 PDFIUM_DIR="$PWD/pdfium"
-REV="chromium/6309"
+REV="chromium/6677"
 PATCH_1="$PWD/code.patch"
 PATCH_2="$PWD/build_linux.patch"
 ARGS="$PWD/args_release_linux.gn"
@@ -18,7 +18,7 @@ if [ ! -d "$DEPOT_TOOLS_DIR" ]; then
 else 
   (cd "$DEPOT_TOOLS_DIR"; git checkout main; git pull)
 fi
-(cd "$DEPOT_TOOLS_DIR"; git checkout 9d7c8e76f82ddc6a3bbc307217e31dec44a0f73a)
+(cd "$DEPOT_TOOLS_DIR"; git checkout f5e10923392588205925c036948e111f72b80271)
 export PATH="$DEPOT_TOOLS_DIR:$PATH"
 
 # Checkout sources
@@ -40,15 +40,13 @@ ninja -C "$BUILD_DIR" pdfium_all
 INCLUDE_DIR="$INSTALL_DIR/include/pdfium"
 mkdir -p "$INCLUDE_DIR"
 cp -r public "$INCLUDE_DIR"
-HEADER_SUBDIRS="build constants fpdfsdk core/fxge core/fxge/agg core/fxge/dib core/fpdfdoc core/fpdfapi/parser core/fpdfapi/page core/fpdfapi/render core/fxcrt third_party/agg23 third_party/base third_party/base/numerics"
+HEADER_SUBDIRS="build constants fpdfsdk core/fxge core/fxge/agg core/fxge/dib core/fpdfdoc core/fpdfapi/parser core/fpdfapi/page core/fpdfapi/render core/fxcrt third_party/agg23 core/fxcrt/numerics"
 for subdir in $HEADER_SUBDIRS; do
     mkdir -p "$INCLUDE_DIR/$subdir"
     cp "$subdir"/*.h "$INCLUDE_DIR/$subdir"
 done
 mkdir -p "$INCLUDE_DIR/third_party/abseil-cpp/absl/types"
 cp third_party/abseil-cpp/absl/types/*.h "$INCLUDE_DIR/third_party/abseil-cpp/absl/types"
-mkdir -p "$INCLUDE_DIR/third_party/base/containers"
-cp third_party/base/containers/*.h "$INCLUDE_DIR/third_party/base/containers"
 mkdir -p "$INCLUDE_DIR/absl/base"
 cp third_party/abseil-cpp/absl/base/*.h "$INCLUDE_DIR/absl/base"
 mkdir -p "$INCLUDE_DIR/absl/base/internal"
