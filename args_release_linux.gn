@@ -8,8 +8,6 @@ pdf_enable_v8 = false
 
 # Set true to enable experimental Skia backend.
 pdf_use_skia = false
-# Set true to enable experimental Skia backend (paths only).
-pdf_use_skia_paths = false
 pdf_is_standalone = true  # Set for a non-embedded build.
 clang_use_chrome_plugins = false  # Currently must be false.
 
