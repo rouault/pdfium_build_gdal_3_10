@@ -8,8 +8,6 @@ pdf_enable_v8 = false
 
 # Set true to enable experimental Skia backend.
 pdf_use_skia = false
-# Set true to enable experimental Skia backend (paths only).
-pdf_use_skia_paths = false
 pdf_is_standalone = true  # Set for a non-embedded build.
 clang_use_chrome_plugins = false  # Currently must be false.
 
@@ -26,6 +24,7 @@ use_system_libjpeg = true
 use_system_libpng = true
 use_system_lcms2 = true
 use_system_libopenjpeg2 = true
+use_system_zlib = true
 
 # Otherwise it might try to fetch the libjpeg headers from there, which may have an incompatible ABI from the system ones
 use_sysroot = false

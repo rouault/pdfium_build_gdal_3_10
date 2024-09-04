@@ -14,7 +14,7 @@ BUILD_DIR="$PDFIUM_DIR/output/Release"
 INSTALL_DIR="$PWD/install"
 
 if [ ! -d "$DEPOT_TOOLS_DIR" ]; then
-  git clone "$DEPOT_TOOLS_URL" "$DEPOT_TOOLS_DIR"
+  git clone "$DEPOT_TOOLS_URL" "$DEPOT_TOOLS_DIR" --single-branch
 else 
   (cd "$DEPOT_TOOLS_DIR"; git checkout main; git pull)
 fi
@@ -23,8 +23,8 @@ export PATH="$DEPOT_TOOLS_DIR:$PATH"
 
 # Checkout sources
 # From https://pdfium.googlesource.com/pdfium/
-gclient config --unmanaged "$PDFIUM_URL"
-gclient sync --revision="$REV"
+gclient config --unmanaged "$PDFIUM_URL" --custom-var=checkout_configuration=minimal
+gclient sync --revision="$REV" --shallow --no-history
 
 cd "$PDFIUM_DIR"
 git apply "$PATCH_1"
@@ -34,7 +34,7 @@ git apply "$PATCH_1"
 mkdir -p "$BUILD_DIR"
 cp "$ARGS" "$BUILD_DIR/args.gn"
 gn gen "$BUILD_DIR"
-ninja -C "$BUILD_DIR" pdfium_all
+ninja -C "$BUILD_DIR" pdfium
 
 # Install headers
 INCLUDE_DIR="$INSTALL_DIR/include/pdfium"
