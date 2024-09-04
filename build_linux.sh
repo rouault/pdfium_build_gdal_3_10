@@ -34,7 +34,7 @@ git apply "$PATCH_1"
 mkdir -p "$BUILD_DIR"
 cp "$ARGS" "$BUILD_DIR/args.gn"
 gn gen "$BUILD_DIR"
-ninja -C "$BUILD_DIR" pdfium_all
+ninja -C "$BUILD_DIR" pdfium
 
 # Install headers
 INCLUDE_DIR="$INSTALL_DIR/include/pdfium"
