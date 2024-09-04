@@ -24,6 +24,7 @@ use_system_libjpeg = true
 use_system_libpng = true
 use_system_lcms2 = true
 use_system_libopenjpeg2 = true
+use_system_zlib = true
 
 # Otherwise it might try to fetch the libjpeg headers from there, which may have an incompatible ABI from the system ones
 use_sysroot = false
