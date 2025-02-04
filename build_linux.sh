@@ -21,6 +21,10 @@ fi
 (cd "$DEPOT_TOOLS_DIR"; git checkout f5e10923392588205925c036948e111f72b80271)
 export PATH="$DEPOT_TOOLS_DIR:$PATH"
 
+# gclient commands below will update, by default, the content of the depot_tools
+# (resulting into a detached head at origin/main). The DEPOT_TOOLS_UPDATE=0 avoids this.
+export DEPOT_TOOLS_UPDATE=0
+
 # Checkout sources
 # From https://pdfium.googlesource.com/pdfium/
 gclient config --unmanaged "$PDFIUM_URL"
